@@ -1,0 +1,17 @@
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.tdo
+*.toc
+*.fls
+*.fdb_latexmk
+*.bbl
+*.blg
+*.pdf
+*.brf
+
+diff
+.vscode/
+.lake/
+.claude/

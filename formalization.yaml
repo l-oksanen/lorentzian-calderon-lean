@@ -1,0 +1,149 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Uniqueness for the Lorentzian Calderón problem with Minkowski exterior"
+  description: >-
+    A formal proof of uniqueness for the Lorentzian Calderón problem on a box.
+    Let n ≥ 2, let M₀ = [-T, T] × [-1, 1]ⁿ ⊆ ℝ^{1+n}, and let g, g' be smooth
+    Lorentzian metrics on ℝ^{1+n} that equal the Minkowski metric outside M₀ and
+    are globally hyperbolic (all causal diamonds compact). If the Cauchy data
+    sets of the wave equations □_g u = 0 and □_{g'} u = 0 on ∂M₀ coincide, then
+    g' pulls back to g under a diffeomorphism of ℝ^{1+n} that is the identity
+    outside M₀. The proof develops, on top of Mathlib, the causal theory of such
+    metrics (temporal functions, null geodesics and conjugate points), retarded
+    solutions of the wave equation, progressing waves with a single front and a
+    weighted energy inequality, combined in an induction over the level sets of
+    a temporal function.
+  authors:
+    - "Matti Lassas"
+    - "Lauri Oksanen"
+    - "Mikko Salo"
+  license: "Apache-2.0"
+  responsible_maintainers:
+    - "Lauri Oksanen"
+
+classification:
+  arxiv: ["math.AP", "math.DG"]
+  msc2020: ["35R30", "35L05", "53C50", "58J45"]
+
+sources:
+  - title: "The Lorentzian Calderón problem"
+    authors:
+      - "Matti Lassas"
+      - "Lauri Oksanen"
+      - "Mikko Salo"
+    id: "TODO: hexagon:26MM.NNNNNv1"
+    type: "paper"
+    relationship: "formalizes"
+    note: >-
+      The main theorem formalizes Corollary 1.4 of the paper, in the special
+      case described under fidelity.
+  - title: "Semi-Riemannian geometry. With applications to relativity"
+    authors: ["B. O'Neill"]
+    location: "Pure and Applied Mathematics 103, Academic Press, 1983"
+    type: "book"
+    relationship: "background"
+    note: >-
+      Causal theory used in the proof (Chapters 5, 10 and 14); the facts used are
+      proved in the formalization, some in weaker forms (docs/weakening.md).
+  - title: "Wave equations on Lorentzian manifolds and quantization"
+    authors: ["C. Bär", "N. Ginoux", "F. Pfäffle"]
+    location: "ESI Lectures in Mathematics and Physics, EMS, 2007"
+    type: "book"
+    relationship: "background"
+    note: >-
+      Green's operators of the wave equation; the formalization proves the
+      retarded solutions it needs by Fourier–Galerkin approximation instead.
+  - title: "Smoothness of time functions and the metric splitting of globally hyperbolic spacetimes"
+    authors: ["A. N. Bernal", "M. Sánchez"]
+    id: "doi:10.1007/s00220-005-1346-1"
+    type: "article"
+    relationship: "background"
+    note: >-
+      Existence of temporal functions; the formalization proves the special case
+      it needs by a different route.
+  - title: "Globally hyperbolic spacetimes can be defined without the 'causal' condition"
+    authors: ["A. Hounnonkpe", "E. Minguzzi"]
+    id: "doi:10.1088/1361-6382/ab3f11"
+    type: "article"
+    relationship: "background"
+    note: >-
+      Justifies stating global hyperbolicity as compactness of causal diamonds
+      in the challenge.
+  - title: "Ordinary differential equations"
+    authors: ["P. Hartman"]
+    location: "Classics in Applied Mathematics 38, SIAM, 2002"
+    type: "book"
+    relationship: "background"
+    note: "Smooth dependence on initial data, proved in the formalization."
+  - title: "Hyperbolic partial differential equations and geometric optics"
+    authors: ["J. Rauch"]
+    location: "Graduate Studies in Mathematics 133, AMS, 2012"
+    type: "book"
+    relationship: "background"
+    note: "Borel's lemma with parameters, proved in the formalization."
+
+related_formalizations: []
+
+status:
+  scope: >-
+    The challenge theorem LorentzianCalderon.main is proved in full, without
+    sorry and with only the axioms propext, Quot.sound and Classical.choice.
+    Every result cited from the literature is proved in the formalization, at
+    the strength the main theorem needs (docs/weakening.md).
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["Claude Opus 5.5"]
+      framework: "Claude Code"
+      tool_setup: >-
+        Claude Code sessions with parallel subagents in separate git worktrees,
+        building with Lake against Mathlib; the human set the statement and the
+        direction and reviewed each step.
+      cost:
+        wall_time: >-
+          About 11 hours on a laptop (24–25 November 2026) and about 14 hours on
+          an HPC compute node (25–26 November 2026)
+        spend_usd: "not tracked"
+        hardware: "local machine; HPC compute node with 32 cores and 192 GB"
+      prompting_notes: >-
+        The paper was turned into a blueprint and the comparator challenge
+        with Claude, then agents formalized the proof, first modulo cited
+        facts and then proving those facts.
+  spend_usd: "not tracked"
+  notes: >-
+    The challenge was written by Claude in a sequence of interactions with
+    the authors. The challenge was reviewed by the authors. The proof was
+    written by Claude Code agents.
+
+fidelity:
+  divergences: >-
+    The main theorem formalizes a special case of Corollary 1.4 of the paper,
+    not its main result (Theorem 1.3). Instead of exterior data outside an
+    arbitrary compact set, Cauchy data on the boundary of the box
+    M₀ = [-T, T] × [-1, 1]ⁿ is considered. Cauchy data is formulated in terms
+    of values and differentials instead of the usual (u, ∂_ν u) formulation.
+
+review:
+  status: "Comparator challenge was reviewed by the authors"
+  reviewers:
+    - "Lauri Oksanen"
+  notes: >-
+    The specialization of Corollary 1.4 of the paper avoids technical
+    difficulties but preserves the features of interest.
+
+alignment:
+  namespace: "LorentzianCalderon"
+  statements:
+    - source: "A special case of Corollary 1.4 of the paper"
+      lean: "LorentzianCalderon.main"
+      module: "Challenge"
+      status: "proved"
+      note: "Proved in LorentzianCalderon/Main.lean, re-exported by Solution."
+
+acknowledgements: "Mathlib"

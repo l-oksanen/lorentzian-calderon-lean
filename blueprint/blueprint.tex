@@ -1,0 +1,2425 @@
+\documentclass[11pt,a4paper,reqno]{amsart}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=2.7cm]{geometry}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{fact}[theorem]{Fact}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\numberwithin{equation}{section}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\cA}{\mathcal{A}}
+\newcommand{\cB}{\mathcal{B}}
+\newcommand{\cC}{\mathcal{C}}
+\newcommand{\cE}{\mathbf{e}}
+\newcommand{\cJ}{\mathcal{J}}
+\newcommand{\cK}{\mathcal{K}}
+\newcommand{\cN}{\mathcal{N}}
+\newcommand{\cT}{\mathcal{T}}
+\newcommand{\cU}{\mathcal{U}}
+\newcommand{\cV}{\mathcal{V}}
+\newcommand{\sg}{\mathsf{g}}
+\newcommand{\sT}{\mathsf{T}}
+\newcommand{\sP}{\mathsf{P}}
+\newcommand{\gM}{g_{\mathrm{Min}}}
+\newcommand{\bg}{\bar g}
+\newcommand{\bth}{\bar\theta}
+\newcommand{\bphi}{\bar\varphi}
+\newcommand{\bw}{\bar w}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\grad}{\operatorname{grad}}
+\newcommand{\dive}{\operatorname{div}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\Sym}{\mathrm{S}^2}
+\newcommand{\ret}{\mathrm{ret}}
+\newcommand{\adv}{\mathrm{adv}}
+\newcommand{\E}{\mathcal{E}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\inte}{\operatorname{int}}
+\newcommand{\cl}{\operatorname{cl}}
+\newcommand{\Ehor}{E}
+% \lean{A.b, C.d} names the Lean declarations of an item; underscores are read verbatim.
+\newcommand{\lean}{\begingroup\catcode`\_=12\relax\leanaux}
+\newcommand{\leanaux}[1]{{\footnotesize\raggedright Lean: \texttt{#1}\par}\endgroup}
+\DeclareUnicodeCharacter{03B8}{\ensuremath{\theta}}
+
+\begin{document}
+
+\title[Uniqueness from Cauchy data sets]{Uniqueness for the Lorentzian Calder\'on problem from Cauchy data sets: a blueprint}
+\maketitle
+
+\section{Conventions}\label{conventions}
+
+Points of $\R^{1+n}$ are written $(t,x)$ with $t\in\R$, $x\in\R^n$, and vectors and covectors at a point of $\R^{1+n}$
+are identified with elements of $\R^{1+n}$ and of its dual; $\Sym$ denotes the space of symmetric bilinear forms on
+$\R^{1+n}$, and $|\cdot|$ the Euclidean norms. A Lorentzian metric $\sg$ on an open set $U\subset\R^{1+n}$ is a smooth map
+from $U$ to the symmetric bilinear forms of signature $(-,+,\dots,+)$: a vector $v\ne0$ at $p$ is timelike, null or
+spacelike according as $\sg_p(v,v)<0$, $=0$ or $>0$. For covectors, $\sg(\cdot,\cdot)$ denotes the inner product induced
+by $\sg$, and $\grad_\sg u=\sg^{-1}du$. The Minkowski metric is $\gM=-dt^2+|dx|^2$. The wave operator of $\sg$ is
+\[
+\Box_\sg u=-|\det\sg|^{-1/2}\,\partial_j\bigl(|\det\sg|^{1/2}\sg^{jk}\,\partial_k u\bigr),
+\]
+so that $\Box_{\gM}=\partial_t^2-\Delta_x$.
+
+A time orientation of $\sg$ is given by a continuous timelike vector field $Y$ on $U$; a causal vector $v$ at $p$ is
+future-directed if $\sg_p(v,Y(p))<0$. Causal curves are piecewise smooth and future-directed unless stated otherwise: a
+causal curve from $x$ to $y$ is a continuous $c\colon[0,1]\to\R^{1+n}$ with $c(0)=x$, $c(1)=y$, smooth on the intervals of a
+partition of $[0,1]$, whose one-sided velocities on these intervals are future-directed causal; timelike curves are
+defined in the same way. We write $x\le y$ (or $x\le_\sg y$) if $x=y$ or there is a causal curve from $x$ to $y$, and
+$x\ll y$ if there is a timelike curve from $x$ to $y$; $J^+(x)=\{y:x\le y\}$, $I^+(x)=\{y:x\ll y\}$,
+$J^-(x)=\{y:y\le x\}$, $I^-(x)=\{y:y\ll x\}$, $J^\pm(A)=\bigcup_{x\in A}J^\pm(x)$, and
+\[
+\Ehor^\pm(x)=J^\pm(x)\setminus I^\pm(x).
+\]
+The relations $\le$ and $\ll$ are transitive (concatenate and reparametrize). Reversing the time orientation, $Y\mapsto-Y$,
+reverses the curves, $t\mapsto c(1-t)$, and therefore exchanges $J^+$ with $J^-$ and $I^+$ with $I^-$.
+A curve $c\colon[0,\infty)\to\R^{1+n}$ is \emph{future-inextendible} if it is a future-directed causal curve on every
+$[0,a]$, $a>0$, and $c(t)$ has no limit in $\R^{1+n}$ as $t\to\infty$; \emph{past-inextendible} curves are the
+future-inextendible curves of the reversed time orientation. A two-sided curve $c\colon\R\to\R^{1+n}$ is an
+\emph{inextendible timelike curve} if it is a timelike curve on every $[a,b]$ and $c(t)$ has no limit as $t\to\pm\infty$.
+(Every inextendible curve can be reparametrized in this way.) A set $A$ is a \emph{future set} if $J^+(A)\subset A$.
+A \emph{Cauchy hypersurface} is a subset met exactly once by every inextendible timelike curve.
+
+$H$ denotes the Heaviside function. Integrals over $\R^{1+n}$ are taken with respect to the volume density
+$dV_\sg=|\det\sg|^{1/2}dx$, and a test function is a function in $C_c^\infty(\R^{1+n})$.
+
+\section{Background}\label{facts}
+
+This section collects the results from the literature on which the proof rests. They are stated in the form in which
+the proof uses them, which is often a special case of the cited result; each statement names the more general result in
+the literature. The formalization proves all of them at the strength stated here. Numbers and pages refer to Hartman
+\cite{Hartman}, Rauch \cite{Rauch}, O'Neill \cite{ONeill} and B\"ar, Ginoux and Pf\"affle \cite{BGP}; in \cite{ONeill}
+items are numbered within chapters, so that ``Lemma~14.13'' is Lemma~13 of Chapter~14.
+
+\subsection{Elementary results}\label{bg_elementary}
+
+\begin{fact}[Smooth dependence on initial data]\label{fact_ode}
+\lean{LorentzianCalderon.Facts.ode_smooth_dependence}
+Let $U\subset\R^m$ be open and $F\colon U\to\R^m$ smooth. Let $D$ be the set of $(t,t_0,x_0)$ for which there is a
+solution $x$ of $\dot x=F(x)$ with values in $U$ on an interval containing $t_0$ and $t$, with $x(t_0)=x_0$. Then $D$ is
+open, and there is a smooth function $X$ on $D$ with $X(t,t_0,x(t_0))=x(t)$ for every such solution $x$ on an interval $I$
+and all $t_0,t\in I$. This is the autonomous case of \cite[Chapter~V, Theorems~3.1 and 4.1]{Hartman}, which treat
+$\dot x=F(t,x,p)$ with a parameter $p$ and smooth dependence on $(t,t_0,x_0,p)$. It applies to geodesics, to integral
+curves of smooth vector fields and to linear transport equations along them (as integral curves of an augmented field).
+(The Lean statement carries a parameter $p$ on which $F$ does not depend.)
+\end{fact}
+
+\begin{fact}[Borel's lemma with parameters]\label{fact_borel}
+\lean{LorentzianCalderon.Facts.borel}
+Let $V\subset\R^{1+n}$ be open and $b_k\in C^\infty(V)$, $k\ge0$. There is $B\in C^\infty(V\times\R)$ with
+$\partial_r^kB(x,0)=b_k(x)$ for all $k$ and $x\in V$, and $B(x,r)=0$ for all $r$ whenever $b_k(x)=0$ for all $k$
+\cite[Borel's Theorem~4.3.1, p.~128]{Rauch}, applied to $b_k/k!$. Its proof is left as an exercise there; the proof of
+\cite[Theorem~4.3.2, p.~129]{Rauch}, with the $\epsilon_k$ chosen on an exhaustion of $V$ by compact sets, gives
+$B(x,r)=\sum_kb_k(x)\frac{r^k}{k!}\chi(r/\epsilon_k)$, which vanishes where all $b_k$ vanish.
+\end{fact}
+
+\subsection{Lorentzian geometry}\label{bg_lorentz}
+
+\begin{definition}[Global hyperbolicity]\label{def_global_hyperbolicity}
+\lean{LorentzianCalderon.IsGloballyHyperbolic, LorentzianCalderon.IsSpacetime, LorentzianCalderon.IsSpacetime.neg}
+Let $n\ge2$. A smooth Lorentzian metric $\sg$ on $\R^{1+n}$ with a time orientation $Y$ is \emph{globally hyperbolic} if
+all causal diamonds $J^+(p)\cap J^-(q)$, $p,q\in\R^{1+n}$, are compact. It is \emph{Minkowskian outside a box} if there
+are $T>0$ and $\sigma\in\{1,-1\}$ such that $\sg=\gM$ and $\sigma\partial_t$ is future-directed outside
+$[-T,T]\times[-1,1]^n$. Reversing the time orientation preserves both properties, with $-\sigma$ in place of $\sigma$,
+since it exchanges $J^+$ and $J^-$.
+\end{definition}
+
+In the rest of this section and in Sections~\ref{geometry} and \ref{waves}, $n\ge2$ and $\sg$ denotes a globally
+hyperbolic metric on $\R^{1+n}$ with time orientation $Y$ that is Minkowskian outside a box
+(Definition~\ref{def_global_hyperbolicity}); the results are applied with $\sg=g'$ and with $\sg=g$, which are such
+metrics by \textup{(A2)} of Definition~\ref{def_setting}. The facts are stated for the time orientation $Y$; each holds
+as well for $-Y$, with $J^\pm$, $I^\pm$ exchanged (Section~\ref{conventions}).
+
+The references assume global hyperbolicity in the traditional sense of \cite[Definition~1.1]{HM19} and
+\cite[p.~411]{ONeill}: strongly causal with compact causal diamonds. A globally hyperbolic metric in the sense of
+Definition~\ref{def_global_hyperbolicity} satisfies the strong causality condition by \cite[Theorem~2.8]{HM19}, which
+applies because $\R^{1+n}$ is not compact and has dimension $1+n\ge3$; so the cited results apply to $\sg$. The
+assumption that $\sg$ is Minkowskian outside a box is not needed for them.
+
+\begin{definition}[Temporal functions]\label{def_temporal}
+\lean{LorentzianCalderon.IsCauchyTemporal, LorentzianCalderon.unitNormal, LorentzianCalderon.lt_of_isPathOn}
+Let $U\subset\R^{1+n}$ be open. A function $\psi\in C^\infty(U)$ is \emph{temporal} if $-\grad_\sg\psi$ is future-directed
+timelike at every point of $U$; then $d\psi(v)=-\sg(-\grad_\sg\psi,v)>0$ for every future-directed causal vector $v$, since
+a future-directed timelike and a future-directed causal vector have negative inner product, so $\psi$ is strictly
+increasing along causal curves. It is \emph{Cauchy temporal} if $U=\R^{1+n}$ and every level set is a Cauchy
+hypersurface. The vector field $\nu_\psi=-\grad_\sg\psi/\sqrt{-\sg(d\psi,d\psi)}$ is the future-directed unit normal of the
+level sets of $\psi$.
+\end{definition}
+
+\begin{definition}[Eikonal functions]\label{def_eikonal}
+\lean{LorentzianCalderon.IsFutureEikonal, LorentzianCalderon.IsEikonal}
+A function $\varphi$, smooth on an open set, with $\sg(d\varphi,d\varphi)=0$ and $d\varphi\ne0$ is \emph{eikonal}; it is
+\emph{eikonal of future type} if the vector field
+\[
+Z_{\sg,\varphi}:=-\grad_\sg\varphi
+\]
+is future-directed. Then $Z_{\sg,\varphi}\varphi=-\sg(d\varphi,d\varphi)=0$.
+\end{definition}
+
+\begin{fact}[Cauchy temporal functions]\label{fact_cauchy_temporal}
+\lean{LorentzianCalderon.Facts.exists_temporal, LorentzianCalderon.Facts.exists_cauchyTemporal}
+There is a temporal function on $\R^{1+n}$. Moreover, there is a Cauchy temporal function $\psi$ such that the flow
+$\Phi$ of the vector field $N_\psi=\grad_\sg\psi/\sg(d\psi,d\psi)$ is complete: there is a smooth
+$\Phi\colon\R\times\R^{1+n}\to\R^{1+n}$, $(r,x)\mapsto\Phi_r(x)$, with $\Phi_0=\id$,
+$\partial_r\Phi_r(x)=N_\psi(\Phi_r(x))$ and $\psi(\Phi_r(x))=\psi(x)+r$. ($N_\psi$ is a positive multiple of
+$-\grad_\sg\psi$, so future-directed timelike, and $N_\psi\psi=1$.) Both statements are contained in
+\cite[Theorem~1.1]{BS05}, which gives a Cauchy temporal function on any globally hyperbolic spacetime and the
+splitting $\R\times\Sigma$ along this flow.
+\end{fact}
+
+\begin{fact}[Imprisonment]\label{fact_imprisonment}
+\lean{LorentzianCalderon.Facts.imprisonment}
+A future-inextendible causal curve that starts in a compact set $K$ does not stay in $K$: it has a point outside $K$. By
+\cite[Lemma~14.13, p.~408]{ONeill}, which assumes strong causality on $K$, it even leaves $K$ and does not return. The
+same holds for past-inextendible curves.
+\end{fact}
+
+\begin{fact}[Extension of geodesics]\label{fact_geodesic_extension}
+\lean{LorentzianCalderon.Facts.geodesic_extension}
+If a geodesic $\gamma\colon(a,b)\to\R^{1+n}$ whose velocities are all future-directed causal has a limit as $t\to b$,
+then it extends as a geodesic beyond $b$: there is a geodesic defined on an open interval containing $(a,b]$ that agrees
+with $\gamma$ on $(a,b)$. Hence a causal geodesic defined on its maximal interval is inextendible.
+\cite[Lemma~5.8, p.~130]{ONeill} states this for all geodesics.
+\end{fact}
+
+\begin{fact}[Causal curves that are not null pregeodesics]\label{fact_null_pregeodesic}
+\lean{LorentzianCalderon.Facts.chronLT_of_not_nullPregeodesic}
+If $c$ is a causal curve from $p$ to $q$ which is not a null pregeodesic, that is, not a monotone continuous
+reparametrization of a null geodesic, then $p\ll q$ \cite[Proposition~10.46, p.~294]{ONeill}, where moreover the
+timelike curve from $p$ to $q$ is found arbitrarily close to $c$. Hence, if $q\in\Ehor^+(p)$ and $q\ne p$, every
+causal curve from $p$ to $q$ is a null pregeodesic.
+\end{fact}
+
+\begin{fact}[Push-up]\label{fact_pushup}
+\lean{LorentzianCalderon.CausalLE.trans_chronLT, LorentzianCalderon.ChronLT.trans_causalLE}
+If $p\le q\ll r$ or $p\ll q\le r$, then $p\ll r$ \cite[Corollary~14.1, p.~402]{ONeill}.
+\end{fact}
+
+\begin{fact}[Conjugate points]\label{fact_conjugate}
+\lean{LorentzianCalderon.Facts.chronLT_of_conjugate}
+Let $\sigma$ be a geodesic defined on an open interval containing $[0,b]$, with $\dot\sigma(0)$ null and future-directed.
+If $0<r<b$ and $d(\exp_{\sigma(0)})$ is singular at $r\dot\sigma(0)$, that is, $\sigma(r)$ is conjugate to $\sigma(0)$
+along $\sigma$ \cite[Proposition~10.10, p.~271]{ONeill}, then $\sigma(0)\ll\sigma(b)$ \cite[Corollary~14.5,
+p.~404]{ONeill}.
+\end{fact}
+
+\begin{fact}[Gauss lemma]\label{fact_gauss}
+\lean{LorentzianCalderon.Facts.gauss}
+$\sg(d(\exp_y)_w(w),d(\exp_y)_w(\xi))=\sg(w,\xi)$ for $w$ in the domain of $\exp_y$ and $\xi\in\R^{1+n}$
+\cite[Lemma~5.1, p.~127]{ONeill}.
+\end{fact}
+
+\begin{fact}[Topology of the causal relation]\label{fact_causal_topology}
+\lean{LorentzianCalderon.Facts.isClosed_causalLE, LorentzianCalderon.Facts.isOpen_chronFuture, LorentzianCalderon.Facts.isCompact_causalFutureSet_inter_causalPastSet}
+The relation $\le$ is closed in $\R^{1+n}\times\R^{1+n}$ \cite[Lemma~14.22, p.~412]{ONeill}. The sets $I^+(p)$ are open
+\cite[Lemma~14.3, p.~403]{ONeill}. The set $J^+(K)\cap J^-(K')$ is compact for compact $K,K'$
+\cite[Lemma~A.5.7, p.~176]{BGP}.
+\end{fact}
+
+\begin{lemma}[Closed causal futures]\label{lem_green_closed}
+\lean{LorentzianCalderon.isClosed_causalFutureSet, LorentzianCalderon.isClosed_causalPastSet}
+For compact $K$, the sets $J^+(K)$ and $J^-(K)$ are closed.
+\end{lemma}
+\begin{proof}
+Let $q_m\to q$ with $p_m\le q_m$, $p_m\in K$. Along a subsequence $p_m\to p\in K$, and $p\le q$ since $\le$ is closed
+(Fact~\ref{fact_causal_topology}). The past case follows by reversing the time orientation.
+\end{proof}
+
+\begin{fact}[Null geodesics between horismos-related points]\label{fact_maximizer}
+\lean{LorentzianCalderon.Facts.exists_causal_geodesic}
+If $p\le q$, $q\ne p$ and $p\not\ll q$, there is a geodesic $\sigma$, defined on an open interval $I$ containing $[0,1]$,
+with $\sigma(0)=p$, $\sigma(1)=q$, $\dot\sigma(t)$ future-directed causal for $t\in[0,1]$ and $\dot\sigma(t)$ null for
+$t\in I$. This is a special case of \cite[Proposition~14.19, p.~411, and Lemma~14.16, p.~410]{ONeill}: if $p\le q$,
+$q\ne p$, there is a maximizing causal geodesic from $p$ to $q$, timelike if $p\ll q$.
+\end{fact}
+
+\subsection{The direct problem}\label{bg_direct}
+
+\begin{definition}[Distributions and sources]\label{conv_sources}
+\lean{LorentzianCalderon.AgreesOn, LorentzianCalderon.VanishesOn, LorentzianCalderon.IsSource, LorentzianCalderon.funSource, LorentzianCalderon.boxSource, LorentzianCalderon.isSource_funSource, LorentzianCalderon.isSource_boxSource}
+A \emph{distribution} is a map $U$ that assigns a real number $U(h)$ to test functions $h$; no linearity or continuity is
+required. $U$ \emph{agrees with} a function $u$ on a set $V$ if $U(h)=\int uh\,dV_\sg$ for all test functions $h$ with
+$\supp h\subset V$, and $U$ \emph{vanishes} on $V$ if $U(h)=0$ for all such $h$, that is, if $U$ agrees with $0$ on $V$.
+A \emph{source supported in} a compact set $K$ is a map $F\colon C^\infty(\R^{1+n})\to\R$ that is additive and
+homogeneous and satisfies $F(\phi)=0$ for every $\phi\in C^\infty(\R^{1+n})$ that vanishes on a neighbourhood of $K$; then
+$F(\phi)$ depends only on the values of $\phi$ near $K$. If $f$ is bounded, measurable and vanishes outside the compact set
+$K$, then $\phi\mapsto\int f\phi\,dV_\sg$ is a source supported in $K$, again denoted $f$, and so is
+\[
+\Box_\sg P\colon\phi\mapsto\int P\,\Box_\sg\phi\,dV_\sg
+\]
+for $P$ bounded, measurable and vanishing outside $K$.
+\end{definition}
+
+\begin{fact}[Retarded solutions]\label{fact_green}
+\lean{LorentzianCalderon.Facts.exists_retarded}
+Let $f_s\in C^\infty(\R^{1+n})$ depend smoothly on $s\in\R$, that is, be smooth functions of $(s,x)$, with supports in a
+fixed compact set $K$. Then there are $v_s\in C^\infty(\R^{1+n})$, smooth in $(s,x)$, with $\Box_\sg v_s=f_s$ and
+$\supp v_s\subset J^+(K)$. This follows from the theory of the Cauchy problem in \cite[Chapter~3]{BGP}, which is
+stated for normally hyperbolic operators, that is, for second order operators with principal symbol
+$-\sg^{-1}(\xi,\xi)$; $\Box_\sg$ acting on functions is such an operator. For each $s$, $v_s=G_+f_s$ with the Green's
+operator of \cite[Corollary~3.4.3, p.~89]{BGP} (built on \cite[Theorem~3.3.1, p.~87]{BGP}; there the operator with
+support in the causal future is denoted $G_+$ and called ``advanced''). By the uniqueness in
+\cite[Theorem~3.2.11, p.~84]{BGP}, $G_+f_s$ solves the Cauchy problem with vanishing data on a Cauchy hypersurface in
+the past of $K$, so $G_+$ is continuous from test functions supported in $K$ to $C^\infty$
+\cite[Theorem~3.2.12, p.~86]{BGP}, and smoothness in $s$ follows.
+\end{fact}
+
+\begin{lemma}[Green's identity on $\R^{1+n}$]\label{lem_green_identity}
+\lean{LorentzianCalderon.integral_mul_box_comm_of_isCompact, LorentzianCalderon.sum_d_green_field, LorentzianCalderon.integral_sum_d_eq_zero}
+Let $\sg$ be a smooth Lorentzian metric on $\R^{1+n}$ and $u,\vartheta\in C^\infty(\R^{1+n})$ with $\supp u\cap\supp\vartheta$
+compact. Then
+\[
+\int u\,\Box_\sg\vartheta\,dV_\sg=\int\vartheta\,\Box_\sg u\,dV_\sg.
+\]
+\end{lemma}
+\begin{proof}
+Write $\rho=|\det\sg|^{1/2}$ and $\cJ^j(w)=\rho\,\sg^{jk}\partial_kw$, so that $\Box_\sg w=-\rho^{-1}\partial_j\cJ^j(w)$. The
+vector field $X^j=u\,\cJ^j(\vartheta)-\vartheta\,\cJ^j(u)$ satisfies, by the symmetry of $\sg^{jk}$,
+\[
+\partial_jX^j=\rho\,(\vartheta\,\Box_\sg u-u\,\Box_\sg\vartheta).
+\]
+$X$ vanishes near every point outside the compact set $\supp u\cap\supp\vartheta$, since near a point outside $\supp u$
+both $u$ and $\cJ(u)$ vanish, and likewise for $\vartheta$. The integral of the divergence of a compactly supported $C^1$
+vector field vanishes (integrate each $\partial_jX^j$ over a box containing the support, by Fubini's theorem and the
+fundamental theorem of calculus), which gives the identity.
+\end{proof}
+
+\begin{lemma}[Uniqueness for smooth solutions]\label{lem_green_uniqueness}
+\lean{LorentzianCalderon.eq_zero_of_support_subset_causalFutureSet, LorentzianCalderon.eq_zero_of_support_subset_causalPastSet}
+Let $v\in C^\infty(\R^{1+n})$ with $\Box_\sg v=0$. If $\supp v\subset J^+(K)$ or $\supp v\subset J^-(K)$ for a compact
+set $K$, then $v=0$.
+\end{lemma}
+\begin{proof}
+Let $\supp v\subset J^+(K)$ and let $\vartheta$ be a test function. Fact~\ref{fact_green} for the reversed time
+orientation gives $a\in C^\infty(\R^{1+n})$ with $\Box_\sg a=\vartheta$ and $\supp a\subset J^-(\supp\vartheta)$. Since
+$J^+(K)$ is closed (Lemma~\ref{lem_green_closed}), $\supp v\cap\supp a\subset J^+(K)\cap J^-(\supp\vartheta)$, which is
+compact (Fact~\ref{fact_causal_topology}). By Green's identity (Lemma~\ref{lem_green_identity}),
+$\int v\vartheta\,dV_\sg=\int v\,\Box_\sg a\,dV_\sg=\int a\,\Box_\sg v\,dV_\sg=0$. As $\vartheta$ is arbitrary, $v=0$.
+The case of $J^-(K)$ follows by reversing the time orientation.
+\end{proof}
+
+\begin{lemma}[Green operators]\label{lem_green_operators}
+\lean{LorentzianCalderon.retarded, LorentzianCalderon.advanced, LorentzianCalderon.box_retarded, LorentzianCalderon.tsupport_retarded_subset, LorentzianCalderon.retarded_eq_of_support, LorentzianCalderon.retarded_linear, LorentzianCalderon.retarded_box, LorentzianCalderon.contDiff_retarded_param}
+For a test function $f$ let $G^\ret_\sg f$ be a solution $v$ as in Fact~\ref{fact_green} (for $f_s=f$, $K=\supp f$), and let $G^\adv_\sg f$ be the
+one for the reversed time orientation. Then:
+\begin{itemize}
+\item[\textup{(a)}] $G^\ret_\sg f\in C^\infty(\R^{1+n})$, $\Box_\sg G^\ret_\sg f=f$ and $\supp G^\ret_\sg f\subset
+J^+(\supp f)$.
+\item[\textup{(b)}] If $v\in C^\infty(\R^{1+n})$ satisfies $\Box_\sg v=f$ and $\supp v\subset J^+(K)$ for a compact set $K$,
+then $v=G^\ret_\sg f$. In particular $G^\ret_\sg f$ does not depend on the choice of the solution.
+\item[\textup{(c)}] $G^\ret_\sg$ is linear on test functions, and $G^\ret_\sg\Box_\sg f=f$.
+\item[\textup{(d)}] If $f_s$ depends smoothly on $s\in\R$, with supports in a fixed compact set, then
+$(s,x)\mapsto(G^\ret_\sg f_s)(x)$ is smooth.
+\end{itemize}
+The same holds for $G^\adv_\sg$ with $J^-$ in place of $J^+$, and reversing the time
+orientation exchanges $G^\ret_\sg$ and $G^\adv_\sg$.
+\end{lemma}
+\begin{proof}
+(a) holds by definition; the support of $G^\ret_\sg f$ lies in $J^+(\supp f)$, which is closed (Lemma~\ref{lem_green_closed}).
+(b) $G^\ret_\sg f-v$ is smooth, solves $\Box_\sg(G^\ret_\sg f-v)=0$ and is supported in $J^+(\supp f\cup K)$; it vanishes by
+Lemma~\ref{lem_green_uniqueness}.
+(c) For test functions $f_1,f_2$ and $a,b\in\R$, $aG^\ret_\sg f_1+bG^\ret_\sg f_2$ solves $\Box_\sg v=af_1+bf_2$ and is
+supported in $J^+(\supp f_1\cup\supp f_2)$, so it equals $G^\ret_\sg(af_1+bf_2)$ by (b). Likewise $f$ solves
+$\Box_\sg v=\Box_\sg f$, a test function, and $\supp f\subset J^+(\supp f)$, so $f=G^\ret_\sg\Box_\sg f$ by (b).
+(d) Fact~\ref{fact_green} gives solutions $v_s$ of $\Box_\sg v_s=f_s$, smooth in $(s,x)$, supported in $J^+(K)$
+for the common compact support $K$, and $v_s=G^\ret_\sg f_s$ by (b).
+The statements for $G^\adv_\sg$ are those for $G^\ret_\sg$ for the reversed time orientation, which is again globally
+hyperbolic and exchanges $J^+$ and $J^-$.
+\end{proof}
+
+\begin{lemma}[Duality]\label{lem_green_duality}
+\lean{LorentzianCalderon.integral_retarded_mul, LorentzianCalderon.isCompact_tsupport_retarded_inter_advanced}
+For test functions $f,h$,
+\[
+\int(G^\ret_\sg f)\,h\,dV_\sg=\int f\,(G^\adv_\sg h)\,dV_\sg.
+\]
+\end{lemma}
+\begin{proof}
+By Lemma~\ref{lem_green_operators}(a), $\supp G^\ret_\sg f\cap\supp G^\adv_\sg h$ is a closed subset of
+$J^+(\supp f)\cap J^-(\supp h)$, which is compact by Fact~\ref{fact_causal_topology}. Lemma~\ref{lem_green_identity} with
+$u=G^\ret_\sg f$ and $\vartheta=G^\adv_\sg h$, together with $\Box_\sg G^\adv_\sg h=h$ and $\Box_\sg G^\ret_\sg f=f$, gives
+the identity.
+\end{proof}
+
+\begin{lemma}[Retarded solutions of sources]\label{lem_green_distributions}
+\lean{LorentzianCalderon.retardedS, LorentzianCalderon.IsSource.retardedS_map_add, LorentzianCalderon.IsSource.retardedS_map_smul, LorentzianCalderon.IsSource.vanishesOn_retardedS, LorentzianCalderon.agreesOn_retardedS_funSource, LorentzianCalderon.agreesOn_retardedS_boxSource}
+For a source $F$ supported in a compact set $K$ (Definition~\ref{conv_sources}), define the distribution $G^\ret_\sg F$ by
+\[
+(G^\ret_\sg F)(h)=F(G^\adv_\sg h)
+\]
+for test functions $h$; this makes sense since $G^\adv_\sg h$ is smooth. Then:
+\begin{itemize}
+\item[\textup{(a)}] $G^\ret_\sg F$ is additive and homogeneous on test functions, $G^\ret_\sg$ is linear in $F$, and
+$(G^\ret_\sg F)(\Box_\sg h)=F(h)$ for test functions $h$.
+\item[\textup{(b)}] $G^\ret_\sg F$ vanishes on the open set $\R^{1+n}\setminus J^+(K)$.
+\item[\textup{(c)}] For a test function $f$, $G^\ret_\sg f$ in this sense agrees with the function $G^\ret_\sg f$ of
+Lemma~\ref{lem_green_operators} on $\R^{1+n}$.
+\item[\textup{(d)}] For every function $P$ for which $\Box_\sg P$ is defined as in Definition~\ref{conv_sources},
+$G^\ret_\sg\Box_\sg P$ agrees with $P$ on $\R^{1+n}$.
+\end{itemize}
+The advanced solution $G^\adv_\sg F$ is defined in the same way with the time orientation reversed, and vanishes outside
+$J^-(K)$.
+\end{lemma}
+\begin{proof}
+(a) follows from the linearity of $G^\adv_\sg$ on test functions and of $F$ on smooth functions
+(Lemma~\ref{lem_green_operators}(c)), and from $G^\adv_\sg\Box_\sg h=h$.
+(b) Let $h$ be a test function with $\supp h\cap J^+(K)=\emptyset$. Then $K\cap J^-(\supp h)=\emptyset$; since
+$J^-(\supp h)$ is closed (Lemma~\ref{lem_green_closed}), its complement is a neighbourhood of $K$ on which $G^\adv_\sg h$
+vanishes (Lemma~\ref{lem_green_operators}(a)). Hence $F(G^\adv_\sg h)=0$.
+(c) is the duality of Lemma~\ref{lem_green_duality}: $(G^\ret_\sg f)(h)=\int f\,G^\adv_\sg h\,dV_\sg=\int(G^\ret_\sg f)\,h\,dV_\sg$.
+(d) $(G^\ret_\sg\Box_\sg P)(h)=\int P\,\Box_\sg G^\adv_\sg h\,dV_\sg=\int Ph\,dV_\sg$ by Lemma~\ref{lem_green_operators}(a).
+\end{proof}
+\section{Setting and data}\label{setting}
+
+\begin{definition}[Cauchy data sets]\label{def_cauchy_data}
+\lean{LorentzianCalderon.M0, LorentzianCalderon.CauchyDataSubset, LorentzianCalderon.SameCauchyDataSet}
+Let $T>0$, let $B=(-1,1)^n\subset\R^n$ be the open unit cube, $Q_T=(-T,T)\times B$ and $M_0=\overline{Q_T}$, a closed box
+in $\R^{1+n}$. The Cauchy data set of a Lorentzian metric $\sg$ on $\R^{1+n}$ is
+\[
+C^{\mathrm{Hyp}}_\sg=\bigl\{(u|_{\partial M_0},du|_{\partial M_0}):\ u\in C^\infty(\R^{1+n}),\ \Box_\sg u=0\text{ in }M_0\bigr\}.
+\]
+Thus $C^{\mathrm{Hyp}}_\sg\subset C^{\mathrm{Hyp}}_{\sg'}$ means: for every $u\in C^\infty(\R^{1+n})$ with $\Box_\sg u=0$ in
+$M_0$ there is $\tilde u\in C^\infty(\R^{1+n})$ with $\Box_{\sg'}\tilde u=0$ in $M_0$, $\tilde u=u$ and $d\tilde u=du$ on
+$\partial M_0$. The Cauchy data set does not depend on a time orientation of $\sg$.
+\end{definition}
+
+This is the usual Cauchy data set $\{(u|_{\partial^{\mathrm{reg}}M_0},\partial_\nu u|_{\partial^{\mathrm{reg}}M_0})\}$ of the
+solutions $u\in C^\infty(M_0)$, where $\partial^{\mathrm{reg}}M_0$ is the union of the open faces of $M_0$ and $\partial_\nu$
+the outward normal derivative there: two solutions have the same such pair if and only if they have the same values and
+differentials on all of $\partial M_0$, since equal values on an open face give equal tangential derivatives there and the
+open faces are dense in $\partial M_0$; and a function smooth up to the boundary of the box extends to a smooth function on
+$\R^{1+n}$.
+
+\begin{definition}[Standing assumptions]\label{def_setting}
+\lean{LorentzianCalderon.W, LorentzianCalderon.O}
+\begin{itemize}
+\item[\textup{(A1)}] $n\ge2$, $T>0$ and $M_0=\overline{Q_T}$ (Definition~\ref{def_cauchy_data}); $O_0=\R^{1+n}\setminus M_0$.
+\item[\textup{(A2)}] $g$ and $g'$ are smooth Lorentzian metrics on $\R^{1+n}$, equal to $\gM$ on $O_0$, and time-oriented
+so that they are globally hyperbolic (Definition~\ref{def_global_hyperbolicity}) and $\partial_t$ is future-directed on
+$O_0$ for both.
+\item[\textup{(A3)}] $C^{\mathrm{Hyp}}_g\subset C^{\mathrm{Hyp}}_{g'}$ (Definition~\ref{def_cauchy_data}).
+\end{itemize}
+We put
+\[
+W=\bigl\{(t,x):\ |x|\le R,\ -T-2(R-|x|)\le t\le T\bigr\},\qquad R=\sqrt n,\qquad O=\R^{1+n}\setminus W .
+\]
+Then $W$ is compact, $M_0\subset[-T,T]\times\overline{B_R}\subset W$, where $\overline{B_R}\subset\R^n$ is the closed ball
+of radius $R$, and $O\subset O_0$, so that $g=g'=\gM$ on $O$, with the same time orientation.
+\end{definition}
+
+\begin{lemma}[Exterior points escape]\label{lem_escape}
+\lean{LorentzianCalderon.exists_isInextendibleRay_subset_O, LorentzianCalderon.exists_escape_direction}
+Let $n\ge1$ and let $\sg$ be a Lorentzian metric on $\R^{1+n}$ with a time orientation, equal to $\gM$ on $O_0$, with
+$\partial_t$ future-directed on $O_0$ (for instance $\sg=g$ or $\sg=g'$ under \textup{(A2)}). Every $(t,x)\in O$ is the
+initial point of a ray $s\mapsto(t+s,x+sv)$, $s\ge0$, with $v\in\R^n$ and $|v|<1$, which is contained in $O$; it is a
+future-inextendible timelike curve for $\sg$, and it leaves every compact set for good, as its first coordinate tends
+to infinity. The ray depends only on $(t,x)$, not on $\sg$.
+\end{lemma}
+\begin{proof}
+Since $\sg=\gM$ on $O$ with $\partial_t$ future-directed, a curve $s\mapsto(t+s,x+sv)$, $s\ge0$, with $v\in\R^n$,
+$|v|<1$, which is contained in $O$ is timelike and future-directed; it is future-inextendible because its
+first coordinate tends to infinity. If $|x|>R$ or $t>T$, the curve $s\mapsto(t+s,x)$ stays in $O$. Otherwise $|x|\le R$
+and $t<-T-2(R-|x|)$. Let $e$ be a unit vector with $x=|x|e$ and consider $s\mapsto(t+s,x+\frac12se)$, for which
+$|x+\frac12se|=|x|+\frac12s$. As long as $|x|+\frac12s\le R$,
+\[
+-T-2\bigl(R-|x|-\tfrac12s\bigr)=-T-2(R-|x|)+s>t+s,
+\]
+so the point $(t+s,x+\frac12se)$ is not in $W$; for larger $s$ its spatial part has norm $>R$. Hence the curve stays in
+$O$.
+\end{proof}
+
+\begin{lemma}[Comparison of causal futures]\label{set_causal_comparison}
+\lean{LorentzianCalderon.causalLE_or_of_causalLE, LorentzianCalderon.causalFutureSet_subset_of_cone}
+Let $\sg$ and $\sg'$ be time-oriented Lorentzian metrics on $\R^{1+n}$, $\sg'$ globally hyperbolic, and $C\subset\R^{1+n}$
+closed, such that at every point outside $C$ every future-directed causal vector of $\sg$ is a future-directed causal vector
+of $\sg'$. If $p\le_\sg q$, then $p\le_{\sg'}q$ or $z\le_{\sg'}q$ for some $z\in C$. Hence
+$J^+_\sg(K)\subset J^+_{\sg'}(K\cup C)$ for every $K\subset\R^{1+n}$.
+\end{lemma}
+\begin{proof}
+Let $\gamma\colon[\alpha,\beta]\to\R^{1+n}$ be a smooth $\sg$-causal curve. If $\gamma$ does not meet $C$, it is
+$\sg'$-causal, and $\gamma(\alpha)\le_{\sg'}\gamma(\beta)$. Otherwise let $t_0$ be the largest element of the closed set
+$\gamma^{-1}(C)$. If $t_0<\beta$, then for $t_0<t<\beta$ the restriction of $\gamma$ to $[t,\beta]$ is $\sg'$-causal, so
+$\gamma(t)\le_{\sg'}\gamma(\beta)$, and letting $t\downarrow t_0$ gives $\gamma(t_0)\le_{\sg'}\gamma(\beta)$, since the
+relation $\le_{\sg'}$ is closed (Fact~\ref{fact_causal_topology}); so $z=\gamma(t_0)\in C$ has $z\le_{\sg'}\gamma(\beta)$.
+For a piecewise smooth $\sg$-causal curve from $p$ to $q$ with break points $\gamma(s_0)=p,\gamma(s_1),\dots,\gamma(s_k)=q$,
+induction on $i$ gives the alternative for $p$ and $\gamma(s_i)$: if $p\le_{\sg'}\gamma(s_i)$ or $z\le_{\sg'}\gamma(s_i)$
+with $z\in C$, then either alternative for the piece $[s_i,s_{i+1}]$ combines with it by transitivity.
+\end{proof}
+
+\begin{lemma}[Green's identity on the box]\label{set_box_green}
+\lean{LorentzianCalderon.integral_mul_box_comm, LorentzianCalderon.integral_divergence_M0_eq_zero}
+Let $\sg$ be a smooth Lorentzian metric on $\R^{1+n}$ and $w,\vartheta\in C^\infty(\R^{1+n})$ with $w=0$ and $dw=0$ on
+$\partial M_0$. Then
+\[
+\int_{M_0}w\,\Box_\sg\vartheta\,dV_\sg=\int_{M_0}\vartheta\,\Box_\sg w\,dV_\sg .
+\]
+\end{lemma}
+\begin{proof}
+Write $\rho=|\det\sg|^{1/2}$, so that $dV_\sg=\rho\,dx$. The vector field
+\[
+X^j=\rho\,\sg^{jk}\bigl(w\,\partial_k\vartheta-\vartheta\,\partial_kw\bigr)
+\]
+is smooth, vanishes on $\partial M_0$, and has divergence $\partial_jX^j=\rho\,(\vartheta\,\Box_\sg w-w\,\Box_\sg\vartheta)$,
+by the symmetry of $\sg^{jk}$. By the divergence theorem on the box $M_0$, whose boundary terms are integrals of the
+components of $X$ over the faces, $\int_{M_0}\partial_jX^j\,dx=0$.
+\end{proof}
+
+\begin{lemma}[The data]\label{lem_data}
+\lean{LorentzianCalderon.retarded_eq_of_cauchyDataSubset, LorentzianCalderon.advanced_eq_of_cauchyDataSubset, LorentzianCalderon.retarded_eq_of_cauchyDataSubset_of_cone}
+Assume \textup{(A1)}--\textup{(A3)} (Definition~\ref{def_setting}). Then $G^\ret_gf=G^\ret_{g'}f$ and
+$G^\adv_gf=G^\adv_{g'}f$ on $O_0$ for every $f\in C_c^\infty(\R^{1+n})$ with $\supp f\subset O_0$, with the Green operators
+of Fact~\ref{fact_green}.
+\end{lemma}
+\begin{proof}
+\emph{Step 1 (retarded).} We use \textup{(A2)} only through the following: $g$ and $g'$ are globally hyperbolic, equal to
+$\gM$ on $O_0$, and have the same future-directed causal vectors at the points of $O_0$. Let $u=G^\ret_gf$ and
+$r=G^\ret_{g'}f$. Since $f=0$ on $M_0$, $\Box_gu=0$ in $M_0$, so by \textup{(A3)} there is $\tilde u\in C^\infty(\R^{1+n})$
+with $\Box_{g'}\tilde u=0$ in $M_0$ and $\tilde u=u$, $d\tilde u=du$ on $\partial M_0$. Put $w=\tilde u-u$; then $w=0$ and
+$dw=0$ on $\partial M_0$. Since $g=g'$ on the open set $O_0$, $\Box_{g'}u=\Box_gu=f$ there.
+
+As $u-r$ is continuous, it suffices to show $\int(u-r)h\,dx=0$ for every $h\in C_c^\infty(\R^{1+n})$ with $\supp h\subset
+O_0$. Fix such an $h$; as $dV_{g'}=dx$ on $O_0$, the integrals $\int uh\,dx$ and $\int rh\,dx$ equal the corresponding
+integrals with respect to $dV_{g'}$. Let $a=G^\adv_{g'}h$, so that $\Box_{g'}a=h$. By the duality of Fact~\ref{fact_green},
+\[
+\int r\,h\,dV_{g'}=\int f\,a\,dV_{g'} .
+\]
+On the other hand, $\supp u\subset J^+_g(\supp f)\subset J^+_{g'}(\supp f\cup M_0)$ by Lemma~\ref{set_causal_comparison}
+(with $C=M_0$), and $\supp a\subset J^-_{g'}(\supp h)$, so $\supp u\cap\supp a$ is compact (Fact~\ref{fact_causal_topology}).
+Integration by parts on $\R^{1+n}$ therefore gives
+\[
+\int u\,h\,dV_{g'}=\int u\,\Box_{g'}a\,dV_{g'}=\int a\,\Box_{g'}u\,dV_{g'}
+=\int_{M_0}a\,\Box_{g'}u\,dV_{g'}+\int_{O_0}a\,f\,dV_{g'} .
+\]
+In $M_0$ we have $\Box_{g'}u=\Box_{g'}\tilde u-\Box_{g'}w=-\Box_{g'}w$, and by Lemma~\ref{set_box_green},
+\[
+\int_{M_0}a\,\Box_{g'}w\,dV_{g'}=\int_{M_0}w\,\Box_{g'}a\,dV_{g'}=\int_{M_0}w\,h\,dV_{g'}=0,
+\]
+since $h=0$ on $M_0$. As $f=0$ on $M_0$, we get $\int uh\,dV_{g'}=\int fa\,dV_{g'}=\int rh\,dV_{g'}$. Therefore $u=r$ on
+$O_0$.
+
+\emph{Step 2 (advanced).} Reverse the time orientations of $g$ and $g'$. The properties used in Step~1 are kept
+(Definition~\ref{def_global_hyperbolicity}), and \textup{(A3)} does not depend on the time orientations. The reversal
+exchanges the retarded and the advanced Green operators (Fact~\ref{fact_green}), so Step~1 gives
+$G^\adv_gf=G^\adv_{g'}f$ on $O_0$.
+\end{proof}
+
+\begin{lemma}[Transfer of solutions]\label{lem_transfer}
+\lean{LorentzianCalderon.existsUnique_transfer, LorentzianCalderon.transfer}
+Assume \textup{(A1)}--\textup{(A3)} (Definition~\ref{def_setting}). For every $v'\in C^\infty(\R^{1+n})$ with
+$\Box_{g'}v'=0$ there is a unique $v\in C^\infty(\R^{1+n})$ with $\Box_gv=0$ and $v=v'$ on $O$. We write $v=\sT v'$.
+\end{lemma}
+\begin{proof}
+Choose $\chi\in C_c^\infty(\R^{1+n})$ with $\chi=1$ on an open ball containing $W$. Then $f:=\Box_{g'}(\chi v')\in
+C_c^\infty(\R^{1+n})$ vanishes on that ball, so $\supp f\subset O_0$, and $G^\ret_{g'}f=\chi v'$ (Fact~\ref{fact_green}).
+Put $v=(1-\chi)v'+G^\ret_gf$. The function $(1-\chi)v'$ vanishes near $M_0$, and $g=g'$ on $O_0$, so
+$\Box_g((1-\chi)v')=\Box_{g'}((1-\chi)v')$; hence $\Box_gv=\Box_{g'}((1-\chi)v')+\Box_{g'}(\chi v')=\Box_{g'}v'=0$. On $O$,
+$v=(1-\chi)v'+G^\ret_{g'}f=v'$ by Lemma~\ref{lem_data}. Uniqueness: a solution of $\Box_gz=0$ vanishing on $O$ is supported in
+the compact set $W\subset J^+(W)$ and vanishes by Lemma~\ref{lem_green_uniqueness}.
+\end{proof}
+
+\begin{lemma}[Solutions with a prescribed differential]\label{set_prescribed_differential}
+\lean{LorentzianCalderon.Facts.exists_solution_fderiv_eq}
+For $p\in\R^{1+n}$ and a covector $\zeta$ at $p$ there is $v\in C^\infty(\R^{1+n})$ with $\Box_\sg v=0$ and $dv(p)=\zeta$.
+\end{lemma}
+\begin{proof}
+Let $\psi$ be a Cauchy temporal function (Fact~\ref{fact_cauchy_temporal}) and $c=\psi(p)$; then $\sg(d\psi,d\psi)<0$.
+Choose $\chi\in C_c^\infty(\R^{1+n})$ with $\chi=1$ near $p$, and put $b_0=\chi\zeta$, $b_1=0$ and
+$b_{k+2}=\sg(d\psi,d\psi)^{-1}\bigl(\Box_\sg b_k-2\sg(d\psi,db_{k+1})+(\Box_\sg\psi)b_{k+1}\bigr)$; all $b_k$ vanish outside
+$\supp\chi$. By Fact~\ref{fact_borel} there is a smooth $B(x,r)$ with $\partial_r^kB(x,0)=b_k(x)$, vanishing for
+$x\notin\supp\chi$. By the chain rule, $w=B(\cdot,\psi-c)$ satisfies $\Box_\sg w=R(\cdot,\psi-c)$ with
+$R(x,r)=\Box_xB+2Z_x\partial_rB+(\Box_\sg\psi)\partial_rB-\sg(d\psi,d\psi)\partial_r^2B$, $Z=-\grad_\sg\psi$, and the
+recursion gives $\partial_r^kR(x,0)=0$ for all $k$. Hence $F_+=H(\psi-c)\Box_\sg w$ and $F_-=\Box_\sg w-F_+$ are test
+functions with supports in $\{\psi\ge c\}$ and $\{\psi\le c\}$. Put $v=w-G^\ret_\sg F_+-G^\adv_\sg F_-$
+(Lemma~\ref{lem_green_operators}); then $\Box_\sg v=0$. $G^\ret_\sg F_+$ vanishes on $\{\psi<c\}$ and $G^\adv_\sg F_-$ on
+$\{\psi>c\}$, and $p$ lies in the closure of both sets since $d\psi(p)\ne0$, so their differentials vanish at $p$. Finally
+$dw(p)=db_0(p)+b_1(p)\,d\psi(p)=\zeta$.
+\end{proof}
+
+\begin{lemma}[Solution coordinates]\label{lem_solution_coords}
+\lean{LorentzianCalderon.exists_solution_coords, LorentzianCalderon.exists_solution_coords_span}
+Let $\sg$ be a globally hyperbolic metric on $\R^{1+n}$ and $K\subset\R^{1+n}$ compact. There are $m\in\mathbb N$,
+functions $v'_1,\dots,v'_m\in C^\infty(\R^{1+n})$ with $\Box_\sg v'_i=0$, and an open set $N'\supset K$ such that
+$\mathbf v'=(v'_1,\dots,v'_m)\colon N'\to\R^m$ is an immersion; equivalently, $dv'_1(x),\dots,dv'_m(x)$ span the covectors
+at every $x\in N'$.
+\end{lemma}
+\begin{proof}
+Let $p\in K$. By Lemma~\ref{set_prescribed_differential} there are $n+1$ solutions whose differentials at $p$ form the dual
+basis of the coordinate vectors. The determinant of the matrix of their differentials is continuous and equal to $1$ at
+$p$, so their differentials are linearly independent in an open neighbourhood of $p$. Cover $K$ by finitely many such
+neighbourhoods and collect the solutions.
+\end{proof}
+\section{Geometry of first arrivals}\label{geometry}
+
+In this section all causal notions refer to $\sg$, with time orientation $Y$. A \emph{geodesic} is a smooth curve
+$\gamma$, defined on an open subset of $\R$, with $\ddot\gamma^k+\Gamma^k_{ij}(\gamma)\dot\gamma^i\dot\gamma^j=0$. Let
+$\Omega_{\exp}\subset\R^{1+n}\times\R^{1+n}$ be the set of all $(y,w)$ for which the geodesic $\gamma$ with $\gamma(0)=y$,
+$\dot\gamma(0)=w$ is defined on an open interval containing $[0,1]$; then $\exp_yw=\gamma(1)$ (this does not depend on the
+choice of $\gamma$ by Lemma~\ref{geo_exp}(a)), and
+$\cE\colon\Omega_{\exp}\to\R^{1+n}\times\R^{1+n}$, $\cE(y,w)=(y,\exp_yw)$. We say that $\exp_y$ is \emph{singular} at $w$ if
+$d(\exp_y)_w$ is not invertible, that is, if $\exp_yw$ is conjugate to $y$ along $r\mapsto\exp_y(rw)$.
+
+\begin{lemma}[Geodesics and the exponential map]\label{geo_exp}
+\lean{LorentzianCalderon.IsGeodesic.eqOn, LorentzianCalderon.isOpen_expDomain, LorentzianCalderon.contDiffOn_expMap, LorentzianCalderon.IsGeodesic.expMap_smul_eq, LorentzianCalderon.isGeodesic_expMap_smul, LorentzianCalderon.IsGeodesic.form_deriv_eq, LorentzianCalderon.IsGeodesic.isFutureCausal, LorentzianCalderon.IsGeodesic.isFutureTimelike}
+\begin{itemize}
+\item[\textup{(a)}] Two geodesics with the same position and velocity at a time $t_0$ agree, together with their velocities,
+on every interval containing $t_0$ on which both are defined.
+\item[\textup{(b)}] $\Omega_{\exp}$ is open, and $(y,w)\mapsto\exp_yw$ is smooth on $\Omega_{\exp}$.
+\item[\textup{(c)}] If $\gamma$ is a geodesic defined on an interval containing $0$ and $t$, then
+$(\gamma(0),t\dot\gamma(0))\in\Omega_{\exp}$ and $\exp_{\gamma(0)}(t\dot\gamma(0))=\gamma(t)$. If $(y,w)\in\Omega_{\exp}$, then
+$r\mapsto\exp_y(rw)$ is a geodesic on the open set $\{r:(y,rw)\in\Omega_{\exp}\}\supset[0,1]$, with velocity $w$ at $r=0$ and
+velocity $d(\exp_y)_ww$ at $r=1$.
+\item[\textup{(d)}] Along a geodesic $\gamma$ defined on an interval, $\sg(\dot\gamma,\dot\gamma)$ is constant, and if
+$\dot\gamma$ is future-directed causal (timelike) at one time, then it is so at all times. Affine reparametrizations of
+geodesics are geodesics.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+A curve $\gamma$ is a geodesic if and only if $z=(\gamma,\dot\gamma)$ solves $\dot z=S(z)$ for the smooth spray
+$S(x,v)=(v,-\Gamma(x)(v,v))$ on $\R^{1+n}\times\R^{1+n}$. Let $X(t,t_0,z_0)$ be the solution map of Fact~\ref{fact_ode} for
+this system; it is smooth on its open domain, and every solution $z$ on an interval satisfies $z(t)=X(t,t_0,z(t_0))$.
+
+(a) Both pairs $(\gamma,\dot\gamma)$ coincide with $X(\cdot,t_0,z_0)$ on the interval.
+
+(b) If $(y,w)\in\Omega_{\exp}$, its geodesic is defined on $[-\varepsilon,1+\varepsilon]$ for some $\varepsilon>0$, so
+$(-\varepsilon,0,(y,w))$ and $(1+\varepsilon,0,(y,w))$ lie in the domain of $X$. Since that domain is open, the same holds for
+all $(y',w')$ near $(y,w)$, and then the first component of $t\mapsto X(t,0,(y',w'))$ is a geodesic on
+$(-\varepsilon,1+\varepsilon)$ with initial data $(y',w')$. So $\Omega_{\exp}$ is open, and $\exp_yw$ is the first component of
+$X(1,0,(y,w))$, a smooth function of $(y,w)$.
+
+(c) The curve $r\mapsto\gamma(tr)$ is a geodesic with initial data $(\gamma(0),t\dot\gamma(0))$, defined on an open set
+containing $[0,1]$; by (a) its value at $r=1$ is $\exp_{\gamma(0)}(t\dot\gamma(0))$. For the second statement, the set is
+open by (b). Near each of its points $r_1\ne0$, the first statement applied to the geodesic $\gamma_1$ with initial data
+$(y,r_1w)$ gives $\exp_y(rw)=\gamma_1(r/r_1)$; near $r_1=0$ the same holds with the geodesic belonging to $(y,w)$ itself.
+So $r\mapsto\exp_y(rw)$ is locally, hence globally, a geodesic, with velocity $w$ at $0$; its velocity at $1$ is
+$d(\exp_y)_ww$ by the chain rule.
+
+(d) Using the geodesic equation and $g_{kl}\Gamma^k_{ij}v^iv^jv^l=\frac12\partial_ag_{bl}v^av^bv^l$,
+\[
+\frac{d}{dt}\,\sg_{\gamma}(\dot\gamma,\dot\gamma)=\partial_ag_{bl}\dot\gamma^a\dot\gamma^b\dot\gamma^l
+-2\sg(\Gamma(\dot\gamma,\dot\gamma),\dot\gamma)=0 .
+\]
+If $\dot\gamma(t_0)\ne0$, then $\dot\gamma$ never vanishes, since otherwise $\gamma$ would agree with a constant geodesic by
+(a). If $\dot\gamma(t_0)$ is future-directed causal, then $\dot\gamma$ is causal and nonzero everywhere, and the continuous
+function $t\mapsto\sg(\dot\gamma(t),Y(\gamma(t)))$ never vanishes (a nonzero causal vector is not orthogonal to a timelike one),
+so it keeps its negative sign. The last statement is a direct computation.
+\end{proof}
+
+\begin{lemma}[Causal geodesic rays leave compact sets]\label{geo_ray}
+\lean{LorentzianCalderon.not_forall_expMap_smul_mem, LorentzianCalderon.IsGeodesic.not_tendsto_atTop}
+Let $w$ be a future-directed causal vector at $y$ and $K\subset\R^{1+n}$ compact. Then there is $r\ge0$ with
+$(y,rw)\in\Omega_{\exp}$ and $\exp_y(rw)\notin K$.
+\end{lemma}
+\begin{proof}
+Let $D=\{r:(y,rw)\in\Omega_{\exp}\}$ and $c(r)=\exp_y(rw)$, a geodesic on $D$ with $\dot c(0)=w$ (Lemma~\ref{geo_exp}(c)), whose
+velocity is future-directed causal on every interval in $D$ containing $0$ (Lemma~\ref{geo_exp}(d)).
+
+If $[0,\infty)\subset D$, then $c(r)$ has no limit as $r\to\infty$. Indeed, suppose $c(r)\to x$; choose $r_j\to\infty$ such that
+$u_j=\dot c(r_j)/|\dot c(r_j)|$ converges to some $v$, and $S>0$ with $(x,Sv)\in\Omega_{\exp}$. For $\tau\in[0,1]$,
+$\exp_{c(r_j)}(\tau Su_j)=c(r_j+\tau S/|\dot c(r_j)|)\to x$ by Lemma~\ref{geo_exp}(c), while
+$\exp_{c(r_j)}(\tau Su_j)\to\exp_x(\tau Sv)$ by continuity of $\exp$. So $\tau\mapsto\exp_x(\tau Sv)$ is constant on $[0,1]$,
+although its velocity $Sv\ne0$ does not vanish. Hence $c|_{[0,\infty)}$ is a future-inextendible causal curve.
+
+Otherwise let $b=\inf([0,\infty)\setminus D)$; since $D$ is open and $0\in D$, $b>0$, $b\notin D$ and $[0,b)\subset D$. If
+$c(r)$ had a limit as $r\to b$, then by Fact~\ref{fact_geodesic_extension}, applicable as the velocity of $c$ is
+future-directed causal on $[0,b)$, $c|_{[0,b)}$ would extend to a geodesic on an open set containing $[0,b]$, and $b\in D$ by Lemma~\ref{geo_exp}(c). Hence $s\mapsto c(bs/(1+s))$, $s\in[0,\infty)$, is a
+future-inextendible causal curve.
+
+In both cases Fact~\ref{fact_imprisonment} gives a point of the curve outside $K$.
+\end{proof}
+
+\begin{lemma}[Limits of causal geodesics]\label{geo_limit}
+\lean{LorentzianCalderon.exists_tendsto_of_causalLE}
+Let $(y_k,p_k)\to(y_0,x_0)$ with $y_0\ne x_0$, $y_k\le p_k$, $y_k\ne p_k$ and $p_k\notin I^+(y_k)$. There are
+future-directed causal vectors $w_k$ at $y_k$ with $(y_k,w_k)\in\Omega_{\exp}$ and $\exp_{y_k}w_k=p_k$, and a subsequence
+with $w_k\to w'$, where $w'$ is a future-directed causal vector at $y_0$ with $(y_0,w')\in\Omega_{\exp}$ and
+$\exp_{y_0}w'=x_0$.
+\end{lemma}
+\begin{proof}
+Fact~\ref{fact_maximizer} gives future-directed null geodesics $c_k\colon[0,1]\to\R^{1+n}$ from $y_k$ to $p_k$; put
+$w_k=\dot c_k(0)$, so that $c_k(r)=\exp_{y_k}(rw_k)$ (Lemma~\ref{geo_exp}(c)), and $c_k(r)\in J^+(y_k)\cap J^-(p_k)$. Let $\overline Y$, $\overline P$ be the closed unit balls about $y_0$ and $x_0$; the set
+$K=J^+(\overline Y)\cap J^-(\overline P)$ is compact (Fact~\ref{fact_causal_topology}), and $c_k([0,1])\subset K$ for large $k$.
+
+Write $w_k=\lambda_ku_k$ with $\lambda_k=|w_k|>0$, and pass to a subsequence with $u_k\to\hat u$, $|\hat u|=1$. The
+conditions $\sg(u,u)\le0$ and $\sg(u,Y)\le0$ pass to the limit, and $\sg(\hat u,Y(y_0))\ne0$ because $\hat u\ne0$ is causal; so
+$\hat u$ is future-directed causal. By Lemma~\ref{geo_ray} there is $r\ge0$ with $(y_0,r\hat u)\in\Omega_{\exp}$ and
+$\exp_{y_0}(r\hat u)\notin K$. Then $\lambda_k<r$ for all large $k$: otherwise $\exp_{y_k}(ru_k)=c_k(r/\lambda_k)\in K$ for
+infinitely many $k$, and by continuity of $\exp$ at $(y_0,r\hat u)$ and closedness of $K$, $\exp_{y_0}(r\hat u)\in K$. Pass to a
+subsequence with $\lambda_k\to l\in[0,r]$. Then $w_k\to w'=l\hat u$, $(y_0,w')\in\Omega_{\exp}$ by Lemma~\ref{geo_exp}(c) (as
+$(y_0,r\hat u)\in\Omega_{\exp}$), and $\exp_{y_0}w'=\lim p_k=x_0$. Since $x_0\ne y_0=\exp_{y_0}0$, $l>0$, so $w'$ is
+future-directed causal.
+\end{proof}
+
+\begin{lemma}[Junctions of causal geodesics]\label{geo_junction}
+\lean{LorentzianCalderon.IsGeodesic.apply_ne_of_isFutureCausal, LorentzianCalderon.exists_pos_smul_of_not_chronLT}
+\begin{itemize}
+\item[\textup{(a)}] If $\gamma$ is a geodesic on an open set containing $[a,b]$, $a<b$, and $\dot\gamma(a)$ is future-directed
+causal, then $\gamma(a)\ne\gamma(b)$.
+\item[\textup{(b)}] Let $\gamma_1$, $\gamma_2$ be geodesics on open sets containing $[a_1,b_1]$ and $[a_2,b_2]$, $a_i<b_i$, with
+$\dot\gamma_i(a_i)$ future-directed causal, $\gamma_1(b_1)=\gamma_2(a_2)$ and $\gamma_2(b_2)\notin I^+(\gamma_1(a_1))$. Then
+$\dot\gamma_1(b_1)=\kappa\,\dot\gamma_2(a_2)$ for some $\kappa>0$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+(a) By Lemma~\ref{geo_exp}(d), $\gamma|_{[a,b]}$ is a future-directed causal curve. A temporal function $\psi$
+(Fact~\ref{fact_cauchy_temporal}) increases strictly along it (Definition~\ref{def_temporal}), so
+$\psi(\gamma(a))<\psi(\gamma(b))$ and $\gamma(a)\ne\gamma(b)$.
+
+(b) Reparametrize affinely so that $\gamma_1$ runs over $[0,\frac12]$ and $\gamma_2$ over $[\frac12,1]$; the concatenation $c$ is
+a causal curve from $\gamma_1(a_1)$ to $\gamma_2(b_2)\notin I^+(\gamma_1(a_1))$. By Fact~\ref{fact_null_pregeodesic} it is a
+null pregeodesic: $c=\sigma\circ h$ on $[0,1]$ with $\sigma$ a null geodesic and $h$ monotone and continuous. At $m=\frac12$ the
+one-sided derivatives $c'_-$ and $c'_+$ of $c$ are positive multiples of $\dot\gamma_1(b_1)$ and $\dot\gamma_2(a_2)$, and they
+are nonzero. Also $\dot\sigma(h(m))\ne0$: otherwise $\sigma$ would be constant on the interval $h([0,1])$ by
+Lemma~\ref{geo_exp}(a), and $\gamma_1(a_1)=c(0)=c(m)=\gamma_1(b_1)$, contradicting (a). Choose a linear form $\ell$ with
+$\ell(\dot\sigma(h(m)))=1$. Then $s\mapsto\ell(\sigma(s))$ has a differentiable local inverse $\psi$ near $h(m)$, and by continuity
+of $h$, $h=\psi\circ\ell\circ c$ near $m$ on either side. So $h$ has the one-sided derivatives $\ell(c'_\pm)$ at $m$, which are
+nonnegative because $h$ is monotone, and $c'_\pm=\ell(c'_\pm)\,\dot\sigma(h(m))$ by the chain rule. As $c'_\pm\ne0$, both
+$\ell(c'_\pm)$ are positive, and $\dot\gamma_1(b_1)$ is a positive multiple of $\dot\gamma_2(a_2)$.
+\end{proof}
+
+\begin{lemma}[Symmetry of conjugate points]\label{geo_conjugate_symm}
+\lean{LorentzianCalderon.expReverse_spec, LorentzianCalderon.IsConjugateAt.reverse}
+The reversal $\Psi(y,w)=(\exp_yw,\,-d(\exp_y)_ww)$ is a smooth map of $\Omega_{\exp}$ into itself with $\Psi\circ\Psi=\id$ and
+$\cE\circ\Psi=\mathrm{swap}\circ\cE$ on $\Omega_{\exp}$, where $\mathrm{swap}(y,p)=(p,y)$. Moreover
+$\sg(d(\exp_y)_ww,d(\exp_y)_ww)=\sg(w,w)$. Consequently, if $\exp_y$ is singular at $w$, then $\exp_p$, $p=\exp_yw$, is
+singular at $-d(\exp_y)_ww$.
+\end{lemma}
+\begin{proof}
+Let $(y,w)\in\Omega_{\exp}$ and $c(r)=\exp_y(rw)$, a geodesic on an open interval containing $[0,1]$ with $\dot c(0)=w$ and
+$\dot c(1)=d(\exp_y)_ww$ (Lemma~\ref{geo_exp}(c)). The reversed curve $r\mapsto c(1-r)$ is a geodesic on an open interval
+containing $[0,1]$, with initial data $(c(1),-\dot c(1))$, final point $y$ and final velocity $-w$. So
+$\Psi(y,w)\in\Omega_{\exp}$, $\cE(\Psi(y,w))=(\exp_yw,y)$, and, by Lemma~\ref{geo_exp}(c) for the reversed geodesic,
+$\Psi(\Psi(y,w))=(y,w)$; the identity for $\sg$ is Lemma~\ref{geo_exp}(d). $\Psi$ is smooth by Lemma~\ref{geo_exp}(b), since the
+derivative of a smooth map is smooth.
+
+Let $z=(y,w)$. Differentiating $\Psi\circ\Psi=\id$ on the open set $\Omega_{\exp}$ shows that $d\Psi_z$ is invertible, and
+differentiating $\cE\circ\Psi=\mathrm{swap}\circ\cE$ gives $d\cE_{\Psi(z)}\circ d\Psi_z=\mathrm{swap}\circ d\cE_z$. Since
+$d\cE_{(y,w)}(\eta,\xi)=(\eta,\ast+d(\exp_y)_w\xi)$ is block triangular, $d\cE_{(y,w)}$ is invertible if and only if
+$d(\exp_y)_w$ is. Hence if $\exp_p$ is nonsingular at $-d(\exp_y)_ww$, then $d\cE_{\Psi(z)}$, hence $d\cE_z$, hence
+$d(\exp_y)_w$ is invertible.
+\end{proof}
+
+\begin{lemma}[Chronological pairs in an exponential chart]\label{geo_crossing}
+\lean{LorentzianCalderon.eventually_chronLT_imp_form_neg, LorentzianCalderon.exists_hasDerivAt_form_inv}
+Let $\cA\subset\R^{1+n}\times\R^{1+n}$ be open and $W\colon\cA\to\R^{1+n}$ differentiable, such that for every
+$(y,p)\in\cA$, with $w=W(y,p)$: $(y,w)\in\Omega_{\exp}$ and $\exp_yw=p$; $w$ is future-directed causal if
+$\sg_y(w,w)\le0$; and $\sg_y(w,w)\le0$ if $p\in\Ehor^+(y)$. Then every $(y_0,p_0)\in\cA$ with $p_0\notin I^+(y_0)$ has a
+neighbourhood on which $p\in I^+(y)$ implies $\sg_y(W(y,p),W(y,p))<0$.
+\end{lemma}
+\begin{proof}
+For $(y,p)$ let $f_{y,p}(s)=\sg_y(W(y,x_s),W(y,x_s))$ with $x_s=p-sY(p)$, where $(y,x_s)\in\cA$.
+
+\emph{Step 1.} If $(y,x_s)\in\cA$, $Y(p)$ is future-directed timelike at $x_s$ and $f_{y,p}(s)=0$, then $f_{y,p}'(s)>0$.
+Indeed, $w=W(y,x_s)$ is null, hence future-directed. Let $u$ be the derivative of $s\mapsto W(y,x_s)$; differentiating
+$\exp_yW(y,x_s)=x_s$ gives $d(\exp_y)_wu=-Y(p)$, so by Fact~\ref{fact_gauss}
+\[
+f_{y,p}'(s)=2\sg_y(w,u)=2\sg\bigl(d(\exp_y)_ww,d(\exp_y)_wu\bigr)=-2\sg\bigl(d(\exp_y)_ww,Y(p)\bigr)>0,
+\]
+because $d(\exp_y)_ww$, the velocity at $r=1$ of $r\mapsto\exp_y(rw)$, is future-directed causal at $x_s$
+(Lemma~\ref{geo_exp}(c),(d)), and $Y(p)$ is future-directed timelike there.
+
+\emph{Step 2.} Choose $\delta>0$ such that, for $s\in[0,\delta]$, $(y_0,p_0-sY(p_0))\in\cA$ and $Y(p_0)$ is future-directed
+timelike at $p_0-sY(p_0)$. Then $s\mapsto p_0-(\delta-s)Y(p_0)$, $s\in[0,\delta]$, is a timelike curve, so
+$y_0\le p_0-\delta Y(p_0)$ would give $p_0\in I^+(y_0)$ (Fact~\ref{fact_pushup}). By the closedness of $\le$ (Fact~\ref{fact_causal_topology}) and
+the compactness of $[0,\delta]$ there is an open neighbourhood $N$ of $(y_0,p_0)$ such that for $(y,p)\in N$ and
+$s\in[0,\delta]$: $(y,x_s)\in\cA$, $Y(p)$ is future-directed timelike at $x_s$, and $x_\delta\notin J^+(y)$.
+
+\emph{Step 3.} Let $(y,p)\in N$ with $p\in I^+(y)$, and $f=f_{y,p}$. Suppose $f(0)>0$. The set
+$\{s\in[0,\delta]:x_s\notin I^+(y)\}$ is closed, since $I^+(y)$ is open (Fact~\ref{fact_causal_topology}); it contains
+$\delta$ but not $0$. Let $s_0>0$ be its minimum. Then $x_s\in I^+(y)$ for $s<s_0$, so $x_{s_0}\in J^+(y)$ by closedness,
+and $x_{s_0}\in\Ehor^+(y)$, whence $f(s_0)\le0$. At the least zero $s_1\in(0,s_0]$ of $f$ we have $f>0$ on $[0,s_1)$, so
+$f'(s_1)\le0$, contradicting Step~1. Hence $f(0)\le0$ on $N\cap\{p\in I^+(y)\}$. If $f(0)=0$, then $f'(0)>0$ by Step~1, so
+$f(s)>0$ for small $s>0$; but for small $s$, $(y,x_s)\in N$ and $x_s\in I^+(y)$, so $f(s)=f_{y,x_s}(0)\le0$, a
+contradiction. So $N$ is the required neighbourhood.
+\end{proof}
+
+\begin{lemma}[The local world function along a first-arrival geodesic]\label{lem_world_function}
+\lean{LorentzianCalderon.not_isConjugateAt_and_eq_smul, LorentzianCalderon.eq_smul_of_expMap_eq, LorentzianCalderon.eventually_exists_mem, LorentzianCalderon.exists_worldFunction, LorentzianCalderon.IsExpChart.fderiv_worldFn_snd, LorentzianCalderon.IsExpChart.fderiv_worldFn_fst}
+Let $\sigma$ be a geodesic on an open set containing $[0,b]$ such that $\dot\sigma(0)$ is future-directed null and
+\begin{equation}\label{eq_firstarr}
+\sigma(b)\notin I^+(\sigma(0)),
+\end{equation}
+and put $y_0=\sigma(0)$, $v_0=\dot\sigma(0)$. Let $0<t_1<t_2<b$ and $\cK_0=\{(y_0,\sigma(t)):t\in[t_1,t_2]\}$.
+\begin{itemize}
+\item[\textup{(a)}] For $0<t<b$ the map $\exp_{y_0}$ is nonsingular at $tv_0$, and $tv_0$ is the only future-directed causal
+vector $w$ at $y_0$ with $(y_0,w)\in\Omega_{\exp}$ and $\exp_{y_0}w=\sigma(t)$.
+\item[\textup{(b)}] There are an open neighbourhood $\cU\subset\Omega_{\exp}$ of $\{(y_0,tv_0):t\in[t_1,t_2]\}$ and an open
+neighbourhood $\cU'$ of $\cK_0$ such that $\cE\colon\cU\to\cU'$ is a diffeomorphism and $d(\exp_y)_w$ is invertible for
+$(y,w)\in\cU$, every $(y,w)\in\cU$ satisfies $\sg_y(w,Y(y))<0$ (so $w\ne0$, and $w$ is future-directed if it is causal), and the
+smooth function
+\[
+Q\colon\cU'\to\R,\qquad Q(y,p)=\sg_y(w,w)\quad\text{with }(y,w)=(\cE|_{\cU})^{-1}(y,p),
+\]
+has the following properties for $(y,p)\in\cU'$:
+\[
+p\in J^+(y)\iff Q(y,p)\le0,\qquad p\in I^+(y)\iff Q(y,p)<0 .
+\]
+\item[\textup{(c)}] Let $c(r)=\exp_y(rw)$, $r\in[0,1]$, be the geodesic from $y$ to $p$ belonging to $(y,w)=(\cE|_\cU)^{-1}(y,p)$.
+Then
+\[
+d_pQ(y,p)=2\sg(\dot c(1),\cdot),\qquad d_yQ(y,p)=-2\sg(\dot c(0),\cdot).
+\]
+\end{itemize}
+\end{lemma}
+\begin{proof}
+(a) If $\exp_{y_0}$ were singular at $tv_0$ for some $0<t<b$, then $\sigma(b)\in I^+(y_0)$ by Fact~\ref{fact_conjugate},
+contradicting \eqref{eq_firstarr}. Let $w$ be a future-directed causal vector with $(y_0,w)\in\Omega_{\exp}$ and
+$\exp_{y_0}w=\sigma(t)$, and let $c(r)=\exp_{y_0}(rw)$. The geodesics $c$ on $[0,1]$ and $\sigma$ on $[t,b]$ satisfy the
+hypotheses of Lemma~\ref{geo_junction}(b) (with \eqref{eq_firstarr}), so $\dot c(1)=\kappa\dot\sigma(t)$ with $\kappa>0$. The
+geodesics $c$ and $r\mapsto\sigma(\kappa r+t-\kappa)$ have the same position and velocity at $r=1$, so they agree on
+$[r_0,1]$, $r_0=\max(0,1-t/\kappa)$, by Lemma~\ref{geo_exp}(a). If $\kappa>t$, then $r_0\in(0,1)$ and
+$c(r_0)=\sigma(0)=c(0)$, contradicting Lemma~\ref{geo_junction}(a) for $c$ on $[0,r_0]$. If $\kappa<t$, then
+$\sigma(t-\kappa)=c(0)=\sigma(0)$, contradicting Lemma~\ref{geo_junction}(a) for $\sigma$ on $[0,t-\kappa]$. So $\kappa=t$, and
+$w=\dot c(0)=t\dot\sigma(0)=tv_0$.
+
+(b) Let $K=\{(y_0,tv_0):t\in[t_1,t_2]\}$ and $D=\{(y,w)\in\Omega_{\exp}:\sg_y(w,Y(y))<0\}$, an open set containing the compact
+set $K$ (Lemma~\ref{geo_exp}(b)). By (a), $\cE$ is injective on $K$ ($\exp_{y_0}(tv_0)=\sigma(t)$ by Lemma~\ref{geo_exp}(c)), and
+$d\cE$ is invertible at the points of $K$, because $d\cE_{(y,w)}$ is invertible exactly when $d(\exp_y)_w$ is. By the inverse
+function theorem at the points of $K$ and a compactness argument (a map that is injective on a compact set and locally
+injective near it is injective on a neighbourhood of it), there is an open set $\cU_0$ with $K\subset\cU_0\subset D$ such that
+$\cE$ is injective on $\cU_0$, $d\cE$ is invertible on $\cU_0$, $\cE(\cU_0)$ is open, and the inverse of $\cE|_{\cU_0}$ is smooth.
+
+We claim: for every $t\in[t_1,t_2]$ there is a neighbourhood $V_t$ of $(y_0,\sigma(t))$ such that for every $(y,p)\in V_t$ with
+$p\in\Ehor^+(y)$ there is a future-directed causal $w$ with $(y,w)\in\cU_0$ and $\exp_yw=p$. Otherwise there are
+$(y_k,p_k)\to(y_0,\sigma(t))$ with $p_k\in\Ehor^+(y_k)$ without such $w$; as $y_0\ne\sigma(t)$ (Lemma~\ref{geo_junction}(a)),
+$y_k\ne p_k$ for large $k$. Lemma~\ref{geo_limit} gives future-directed causal $w_k$ at $y_k$ with $\exp_{y_k}w_k=p_k$ and a
+subsequence with $w_k\to w'$, where $w'$ is future-directed causal and $\exp_{y_0}w'=\sigma(t)$. By (a), $w'=tv_0$, so
+$(y_k,w_k)\in\cU_0$ for large $k$, a contradiction.
+
+Put $\cU'_1=\cE(\cU_0)\cap\bigcup_{t\in[t_1,t_2]}V_t$, and for $(y,p)\in\cU'_1$ let $W(y,p)$ be the second component of
+$(\cE|_{\cU_0})^{-1}(y,p)$, a smooth map. Every $(y,w)\in\cU_0$ lies in $D$, so $w\ne0$, and $w$ is future-directed if it is
+causal. If $(y,p)\in\cU'_1$ and $p\in\Ehor^+(y)$, then, as $(y,p)\in V_t$ for some $t$, there is a future-directed causal
+$w'$ with $(y,w')\in\cU_0$ and $\cE(y,w')=(y,p)$; by injectivity $w'=W(y,p)$, so $\sg_y(W,W)\le0$. Thus $W$ on $\cU'_1$
+satisfies the hypotheses of Lemma~\ref{geo_crossing}. Moreover $\sigma(t)\notin I^+(y_0)$ for $t\in[t_1,t_2]$, since
+$\sigma(t)\le\sigma(b)$, \eqref{eq_firstarr} and Fact~\ref{fact_pushup}. So Lemma~\ref{geo_crossing} gives for each $t\in[t_1,t_2]$ an open
+neighbourhood $B_t\subset\cU'_1$ of $(y_0,\sigma(t))$ on which $p\in I^+(y)$ implies $\sg_y(W,W)<0$.
+
+Put $\cU'=\bigcup_{t\in[t_1,t_2]}B_t$ and $\cU=\cU_0\cap\cE^{-1}(\cU')$. Then
+$\cE\colon\cU\to\cU'$ is a diffeomorphism, $K\subset\cU$, $\cK_0=\cE(K)\subset\cU'$, and $Q(y,p)=\sg_y(W(y,p),W(y,p))$ on
+$\cU'$.
+
+Let $(y,p)\in\cU'$ and $w=W(y,p)$. If $Q(y,p)\le0$, then $w$ is future-directed causal, and the geodesic
+$r\mapsto\exp_y(rw)$, $r\in[0,1]$, is a future-directed causal curve from $y$ to $p$ (Lemma~\ref{geo_exp}(d)); so
+$p\in J^+(y)$, and $p\in I^+(y)$ if $Q(y,p)<0$. Conversely, if $p\in I^+(y)$, then $Q(y,p)<0$ by the choice of the sets
+$B_t$; and if $p\in\Ehor^+(y)$, then $Q(y,p)\le0$, as shown above. This proves both equivalences.
+
+(c) For fixed $y$, $Q(y,\exp_yw)=\sg(w,w)$ for $(y,w)\in\cU$; differentiating in the direction $\xi\in\R^{1+n}$ and using
+Fact~\ref{fact_gauss}, $d_pQ\,(d(\exp_y)_w\xi)=2\sg(w,\xi)=2\sg(d(\exp_y)_w w,d(\exp_y)_w\xi)$, and
+$d(\exp_y)_ww=\dot c(1)$; since $d(\exp_y)_w$ is invertible for $(y,w)\in\cU$, this is the first formula. For the derivative in
+$y$, let $\tilde w(y,p)=-\dot c(1)=-d(\exp_y)_ww$, the second component of $\Psi(y,w)$ (Lemma~\ref{geo_conjugate_symm}); it
+depends smoothly on $(y,p)\in\cU'$, $\tilde w\ne0$, and $\exp_p\tilde w(y,p)=y$, $d(\exp_p)_{\tilde w}\tilde w=-w=-\dot c(0)$,
+$\sg(\tilde w,\tilde w)=Q(y,p)$. Differentiating $\exp_p\tilde w(y,p)=y$ with respect to $y$ gives
+$d(\exp_p)_{\tilde w}\circ d_y\tilde w=\id$. Hence, for $X\in\R^{1+n}$, by Fact~\ref{fact_gauss},
+\[
+d_yQ(X)=2\sg(\tilde w,d_y\tilde w\,X)=2\sg\bigl(d(\exp_p)_{\tilde w}\tilde w,d(\exp_p)_{\tilde w}d_y\tilde w\,X\bigr)
+=2\sg\bigl(d(\exp_p)_{\tilde w}\tilde w,X\bigr)=-2\sg(\dot c(0),X).
+\]
+\end{proof}
+
+\begin{lemma}[The emission-time function]\label{lem_emission}
+\lean{LorentzianCalderon.exists_isEmissionFunction, LorentzianCalderon.IsEmissionFunction}
+In the situation of Lemma~\ref{lem_world_function}, let $\mu\colon(-\eta_0,\eta_0)\to \R^{1+n}$ be a smooth curve with
+$\dot\mu(s)$ future-directed timelike for all $s$ and $\mu(0)=y_0$. There are $\eta\in(0,\eta_0)$, an open neighbourhood $\cT$
+of $\sigma([t_1,t_2])$ and $\varphi\in C^\infty(\cT)$ with values in $(-\eta,\eta)$ such that:
+\begin{itemize}
+\item[\textup{(i)}] $\varphi$ is eikonal of future type on $\cT$ (Definition~\ref{def_eikonal}), $\varphi(\sigma(t))=0$
+and $Z_{\sg,\varphi}(\sigma(t))=\lambda(t)\dot\sigma(t)$ with $\lambda(t)>0$, for $t\in[t_1,t_2]$;
+\item[\textup{(ii)}] for all $s\in(-\eta,\eta)$: $J^+(\mu(s))\cap\cT=\{x\in\cT:\varphi(x)\ge s\}$;
+\item[\textup{(iii)}] for every $t\in[t_1,t_2]$ and every neighbourhood $\cC$ of $\sigma([0,t])$ there is a neighbourhood
+$\cC_1$ of $\sigma(t)$ such that every $x\in\cC_1\cap\cT$ with $\varphi(x)=0$ is of the form $x=\exp_{y_0}w$ with $w$
+future-directed null, $(y_0,w)\in\Omega_{\exp}$ and $\exp_{y_0}(rw)\in\cC$ for $r\in[0,1]$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+Let $\cU,\cU',Q$ be as in Lemma~\ref{lem_world_function} and $W(y,p)$ the second component of $(\cE|_\cU)^{-1}(y,p)$. Let
+$G(s,p)=Q(\mu(s),p)$ on the open set $\cA=\{(s,p):|s|<\eta_0,\ (\mu(s),p)\in\cU'\}$. By Lemma~\ref{lem_world_function}(c),
+\[
+\partial_sG(s,p)=D(s,p):=-2\sg\bigl(W(\mu(s),p),\dot\mu(s)\bigr),
+\]
+a continuous function on $\cA$. For $t\in[t_1,t_2]$ we have $(0,\sigma(t))\in\cA$, $W(y_0,\sigma(t))=tv_0$,
+$G(0,\sigma(t))=\sg(tv_0,tv_0)=0$ and $D(0,\sigma(t))=-2t\,\sg(v_0,\dot\mu(0))>0$, because $v_0$ is future-directed null and
+$\dot\mu(0)$ future-directed timelike. By the tube lemma there are $\varepsilon>0$ and an open neighbourhood $V$ of
+$\sigma([t_1,t_2])$ such that $(-\varepsilon,\varepsilon)\times V\subset\cA$ and $D>0$ there. Put
+$\eta=\min(\varepsilon,\eta_0)/2$. For $p\in V$, $G(\cdot,p)$ is strictly increasing on $[-\eta,\eta]$. Let
+\[
+\cT=\{p\in V:\ G(-\eta,p)<0<G(\eta,p)\},
+\]
+an open set containing $\sigma([t_1,t_2])$ (as $G(0,\sigma(t))=0$). For $p\in\cT$, $G(\cdot,p)$ has exactly one zero
+$\varphi(p)\in(-\eta,\eta)$, $\varphi(\sigma(t))=0$, and
+\begin{equation}\label{eq_gmon}
+G(s,p)\le0\iff s\le\varphi(p)\qquad(|s|<\eta,\ p\in\cT).
+\end{equation}
+By the implicit function theorem ($\partial_sG=D\ne0$, and the zero is unique), $\varphi$ is smooth on $\cT$. Statement (ii)
+follows from \eqref{eq_gmon} and Lemma~\ref{lem_world_function}(b). Differentiating $G(\varphi(p),p)=0$ and using
+Lemma~\ref{lem_world_function}(c),
+\[
+d\varphi(p)=-\frac{d_pQ(\mu(\varphi(p)),p)}{D(\varphi(p),p)}=-\frac{2\,\sg(\dot c(1),\cdot)}{D(\varphi(p),p)},
+\]
+where $c$ is the geodesic from $\mu(\varphi(p))$ to $p$ belonging to $W(\mu(\varphi(p)),p)$. Its initial velocity is null because
+$Q=0$, hence future-directed by Lemma~\ref{lem_world_function}(b), and so $\dot c(1)$ is future-directed null
+(Lemma~\ref{geo_exp}(d)). Hence $-\grad\varphi(p)=\bigl(2/D(\varphi(p),p)\bigr)\dot c(1)$ is future-directed null, so
+$\sg(d\varphi,d\varphi)=0$, $d\varphi\ne0$, and $\varphi$ is eikonal of future type. For $p=\sigma(t)$ we have $\varphi(p)=0$,
+$W(y_0,\sigma(t))=tv_0$ and $\dot c(1)=d(\exp_{y_0})_{tv_0}(tv_0)=t\dot\sigma(t)$ (Lemma~\ref{geo_exp}(c)), which gives (i) with
+$\lambda(t)=2t/D(0,\sigma(t))$.
+
+For (iii): $W(y_0,\cdot)$ is continuous at $\sigma(t)$ with value $tv_0$, and $\exp_{y_0}(rtv_0)=\sigma(rt)\in\sigma([0,t])$ for
+$r\in[0,1]$. By continuity of $\exp$ and compactness of $[0,1]$ there is a neighbourhood $\cC_1$ of $\sigma(t)$ such that
+$\exp_{y_0}(rW(y_0,x))\in\cC$ for $x\in\cC_1$ and $r\in[0,1]$. If $x\in\cC_1\cap\cT$ and $\varphi(x)=0$, then $(y_0,x)\in\cU'$
+and $Q(y_0,x)=G(0,x)=0$, so $w=W(y_0,x)$ is null, hence future-directed, with $\exp_{y_0}w=x$.
+\end{proof}
+
+\begin{lemma}[Continuing a null geodesic without entering the chronological future]\label{geo_extension}
+\lean{LorentzianCalderon.exists_not_chronLT_extension, LorentzianCalderon.eq_sub_smul_of_expMap_eq}
+Let $\varepsilon_0>0$ and let $\sigma$ be a geodesic on an open set containing $[-\varepsilon_0,1+\varepsilon_0]$ with
+$\dot\sigma(0)$ future-directed null and $\sigma(1)\notin I^+(\sigma(0))$. Then for every $t_a\in(0,1)$ there is
+$\varepsilon\in(0,\varepsilon_0)$ with $\sigma(1+\varepsilon)\notin I^+(\sigma(t_a))$.
+\end{lemma}
+\begin{proof}
+By Lemma~\ref{geo_exp}(d), $\dot\sigma$ is future-directed null on $[-\varepsilon_0,1+\varepsilon_0]$. Put $y_0=\sigma(t_a)$,
+$v=\dot\sigma(t_a)$, $p_0=\sigma(1)$ and $w'=(1-t_a)v$. By Lemma~\ref{geo_exp}(c), $(y_0,rv)\in\Omega_{\exp}$ and
+$\exp_{y_0}(rv)=\sigma(t_a+r)$ for $r\in[0,1+\varepsilon_0-t_a]$; in particular $\exp_{y_0}w'=p_0$. Moreover $y_0\ne p_0$
+(Lemma~\ref{geo_junction}(a)), and $p_0\notin I^+(y_0)$, since $\sigma(0)\le y_0$, $p_0\notin I^+(\sigma(0))$ and Fact~\ref{fact_pushup}. Suppose that
+$\sigma(1+\varepsilon)\in I^+(y_0)$ for all $\varepsilon\in(0,\varepsilon_0)$.
+
+\emph{Step 1: if $w$ is future-directed causal, $(y_0,w)\in\Omega_{\exp}$ and $\exp_{y_0}w=p_0$, then $w=w'$.} The geodesics
+$\sigma$ on $[0,t_a]$ and $r\mapsto\exp_{y_0}(rw)$ on $[0,1]$ satisfy the hypotheses of Lemma~\ref{geo_junction}(b), since
+$p_0\notin I^+(\sigma(0))$; so $v=\kappa w$ with $\kappa>0$. The geodesic $r\mapsto\exp_{y_0}(rv)$ is defined on
+$[0,\max(\kappa^{-1},1-t_a)]$ (Lemma~\ref{geo_exp}(c), from $(y_0,w)\in\Omega_{\exp}$ and from $\sigma$), and it passes through
+$p_0$ at $r=\kappa^{-1}$ (as $\kappa^{-1}v=w$) and at $r=1-t_a$. By Lemma~\ref{geo_junction}(a), $\kappa^{-1}=1-t_a$, so
+$w=w'$.
+
+\emph{Step 2: $\exp_{y_0}$ is singular at $w'$.} Otherwise, by the inverse function theorem, $\cE$ maps an open neighbourhood
+$\cU_0$ of $(y_0,w')$ with $\cU_0\subset D=\{(y,w)\in\Omega_{\exp}:\sg_y(w,Y(y))<0\}$ diffeomorphically onto an open set. As in
+the proof of the claim in Lemma~\ref{lem_world_function}(b), with Lemma~\ref{geo_limit} and Step~1 in place of (a), there is a
+neighbourhood $V$ of $(y_0,p_0)$ such that every $(y,p)\in V$ with $p\in\Ehor^+(y)$ is of the form $p=\exp_yw$ with $w$
+future-directed causal and $(y,w)\in\cU_0$. Let $W(y,p)$ be the second component of $(\cE|_{\cU_0})^{-1}(y,p)$ for
+$(y,p)\in\cE(\cU_0)\cap V$. As in the proof of Lemma~\ref{lem_world_function}(b), $W$ satisfies the hypotheses of
+Lemma~\ref{geo_crossing}, which gives, as $p_0\notin I^+(y_0)$, a neighbourhood $B$ of $(y_0,p_0)$ on which $p\in I^+(y)$
+implies $\sg_y(W,W)<0$. For small $\varepsilon>0$, $(y_0,(1+\varepsilon-t_a)v)\in\cU_0$ and
+$\cE(y_0,(1+\varepsilon-t_a)v)=(y_0,\sigma(1+\varepsilon))\in B$, so $W(y_0,\sigma(1+\varepsilon))=(1+\varepsilon-t_a)v$ is null
+although $\sigma(1+\varepsilon)\in I^+(y_0)$, a contradiction.
+
+\emph{Step 3.} By Lemma~\ref{geo_exp}(c), $d(\exp_{y_0})_{w'}w'$ is the velocity at $r=1$ of
+$r\mapsto\exp_{y_0}(r(1-t_a)v)=\sigma(t_a+r(1-t_a))$, i.e.\ $(1-t_a)\dot\sigma(1)$. By Lemma~\ref{geo_conjugate_symm},
+$\exp_{p_0}$ is singular at $-(1-t_a)\dot\sigma(1)$. The reversed geodesic $\rho(s)=\sigma(1-s)$ has $\rho(0)=p_0$,
+$\rho(1)=\sigma(0)$, and $\dot\rho(0)=-\dot\sigma(1)$ is future-directed null for the reversed time orientation $-Y$; and
+$\exp_{\rho(0)}$ is singular at $(1-t_a)\dot\rho(0)$ with $0<1-t_a<1$. Fact~\ref{fact_conjugate} for the time orientation $-Y$
+gives $\sigma(0)\in I^+_{-Y}(p_0)$, that is, $p_0\in I^+(\sigma(0))$, a contradiction.
+\end{proof}
+
+\begin{lemma}[First-arrival geodesics through a given point]\label{lem_first_arrival}
+\lean{LorentzianCalderon.exists_firstArrival}
+Let $O\subset \R^{1+n}$ be open, $p_0\in \R^{1+n}\setminus O$ and $y\in O\cap\Ehor^-(p_0)$. Then there are $b>1$, $t_1\in(0,1)$ and a
+geodesic $\sigma$ on an open set containing $[0,b]$, with $\dot\sigma(0)$ future-directed null, such that
+\[
+\sigma(1)=p_0,\qquad \sigma(b)\notin I^+(\sigma(0)),\qquad \sigma([0,t_1])\subset O ,
+\]
+and $y\le\sigma(0)$.
+\end{lemma}
+\begin{proof}
+\emph{Step 1.} We have $y\le p_0$, $p_0\notin I^+(y)$, and $y\ne p_0$, since $y\in O$. By Fact~\ref{fact_maximizer} there
+is a geodesic $\tilde\sigma$ from $y=\tilde\sigma(0)$ to $p_0=\tilde\sigma(1)$ with $\dot{\tilde\sigma}$ future-directed null on
+$[0,1]$. Its domain is open, so it contains $[-\varepsilon_0,1+\varepsilon_0]$ for
+some $\varepsilon_0>0$. Choose $t_b\in(0,\frac12]$ with $\tilde\sigma([0,t_b])\subset O$, and put $t_a=t_b/2$, $y_0=\tilde\sigma(t_a)$.
+
+\emph{Step 2.} By Lemma~\ref{geo_extension} there is $\varepsilon\in(0,\varepsilon_0)$ with
+$\tilde\sigma(1+\varepsilon)\notin I^+(y_0)$.
+
+\emph{Step 3.} Put $\sigma(t)=\tilde\sigma(t_a+t(1-t_a))$, $b=1+\varepsilon/(1-t_a)$, and $t_1=(t_b-t_a)/(1-t_a)$. Then $\sigma$ is a
+geodesic on an open set containing $[0,b]$, $\dot\sigma(0)=(1-t_a)\dot{\tilde\sigma}(t_a)$ is future-directed null,
+$\sigma(1)=p_0$, $\sigma(b)=\tilde\sigma(1+\varepsilon)\notin I^+(y_0)$, $\sigma([0,t_1])=\tilde\sigma([t_a,t_b])\subset O$, and
+$y\le y_0=\sigma(0)$ along the causal curve $\tilde\sigma|_{[0,t_a]}$.
+\end{proof}
+
+\begin{lemma}[The boundary of the causal past reaches the exterior]\label{lem_reach}
+\lean{LorentzianCalderon.exists_mem_horismos_past}
+Let $W\subset \R^{1+n}$ be compact, $O=\R^{1+n}\setminus W$ and $p_0\in W$, and assume that every $x\in O$ is the initial point
+$c(0)$ of a future-inextendible timelike curve $c\colon[0,\infty)\to O$ that leaves every compact set for good. Then
+$O\cap\Ehor^-(p_0)\ne\emptyset$.
+\end{lemma}
+\begin{proof}
+Suppose $O\cap\Ehor^-(p_0)=\emptyset$. First, $I^-(p_0)\subset W$. Otherwise let $y\in O\cap I^-(p_0)$ and let $c$ be the curve
+given by the assumption. For each $t\ge0$, $c(t)\in O$, so either $c(t)\notin J^-(p_0)$, or $c(t)\in J^-(p_0)$ and then
+$c(t)\in I^-(p_0)$ by our supposition. Thus the connected set $c([0,\infty))$ lies in the union of the disjoint open sets
+$I^-(p_0)$ and $\R^{1+n}\setminus J^-(p_0)$ (Fact~\ref{fact_causal_topology}, with the time orientation
+reversed for $I^-(p_0)$) and meets the first in $c(0)=y$; so it lies in
+$I^-(p_0)$. Being future-directed, $c$ also lies in $J^+(y)$, hence it stays in the compact set $J^+(y)\cap J^-(p_0)$
+(Definition~\ref{def_global_hyperbolicity}), although it leaves every compact set for good.
+
+Now let $\psi$ be a Cauchy temporal function and $\Phi_s$ the flow of $N_\psi$ (Fact~\ref{fact_cauchy_temporal}), so that
+$\psi(\Phi_s(x))=\psi(x)+s$. For $t>0$, $s\mapsto\Phi_s(p_0)$, $s\in[-t,0]$, is a future-directed timelike curve from
+$\Phi_{-t}(p_0)$ to $p_0$, so $\Phi_{-t}(p_0)\in I^-(p_0)\subset W$, while $\psi(\Phi_{-t}(p_0))=\psi(p_0)-t$. This contradicts the
+boundedness of the continuous function $\psi$ on the compact set $W$.
+\end{proof}
+
+\begin{definition}[Admissible directions]\label{geo_admissible}
+\lean{LorentzianCalderon.IsAdmissibleDirection}
+Let $O\subset\R^{1+n}$ be open and $p_0\in\R^{1+n}$. For a vector $\zeta$ at $p_0$ let $\sigma_\zeta(t)=\exp_{p_0}((t-1)\zeta)$, so
+that $\sigma_\zeta(1)=p_0$ and $\dot\sigma_\zeta(1)=\zeta$. The set $\cV(p_0)$ of \emph{admissible directions} consists of the
+future-directed null vectors $\zeta$ at $p_0$ for which there are $b>1$ and $t_1\in(0,1)$ such that
+$(p_0,(t-1)\zeta)\in\Omega_{\exp}$ for $t\in[0,b]$, $\sigma_\zeta(b)\notin I^+(\sigma_\zeta(0))$ and $\sigma_\zeta([0,t_1])\subset O$.
+\end{definition}
+
+By Lemma~\ref{geo_exp}(c),(d), $\sigma_\zeta$ is then a geodesic on an open set containing $[0,b]$ with $\dot\sigma_\zeta(0)$
+future-directed null, so Lemma~\ref{lem_world_function} applies to it.
+
+\begin{lemma}[The admissible directions form an open set]\label{lem_open_directions}
+\lean{LorentzianCalderon.IsAdmissibleDirection.eventually, LorentzianCalderon.exists_isAdmissibleDirection}
+Let $O\subset \R^{1+n}$ be open and $p_0\in \R^{1+n}$.
+\begin{itemize}
+\item[\textup{(a)}] For every $\zeta_0\in\cV(p_0)$ there is a neighbourhood $N$ of $\zeta_0$ such that every future-directed null
+vector $\zeta\in N$ at $p_0$ lies in $\cV(p_0)$. In particular $\cV(p_0)$ is an open subset of the future null cone at $p_0$.
+\item[\textup{(b)}] If $p_0\notin O$ and $O\cap\Ehor^-(p_0)\ne\emptyset$, then $\cV(p_0)\ne\emptyset$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+(b) For the geodesic $\sigma$ of Lemma~\ref{lem_first_arrival}, $\zeta=\dot\sigma(1)$ is future-directed null and
+$\sigma(t)=\exp_{p_0}((t-1)\zeta)$ for $t\in[0,b]$ by Lemma~\ref{geo_exp}(c); so $\zeta\in\cV(p_0)$.
+
+(a) Let $\sigma=\sigma_{\zeta_0}$ with $b$, $t_1$ as in Definition~\ref{geo_admissible}, fix $t_2\in(1,b)$ and let
+$\cU,\cU',Q$ be as in Lemma~\ref{lem_world_function} for $\sigma$ and $[t_1,t_2]$. Since $\Omega_{\exp}$ is open,
+$\exp$ is continuous and $[0,t_2]$ is compact, for $\zeta$ near $\zeta_0$ we have $(p_0,(t-1)\zeta)\in\Omega_{\exp}$ for
+$t\in[0,t_2]$ and $\sigma_\zeta([0,t_1])\subset O$. The map
+\[
+F(\zeta)=\bigl(\sigma_\zeta(0),\,t_2\dot\sigma_\zeta(0)\bigr),\qquad
+\dot\sigma_\zeta(0)=d\bigl((y,w)\mapsto\exp_yw\bigr)_{(p_0,-\zeta)}(0,\zeta),
+\]
+is continuous at $\zeta_0$ ($\exp$ is $C^1$), and $F(\zeta_0)=(\sigma(0),t_2\dot\sigma(0))\in\cU$; so $F(\zeta)\in\cU$ for $\zeta$
+near $\zeta_0$. Let $\zeta$ be such a vector, future-directed null. Then $\dot\sigma_\zeta(0)$ is null
+(Lemma~\ref{geo_exp}(d)), $\cE(F(\zeta))=(\sigma_\zeta(0),\sigma_\zeta(t_2))\in\cU'$ by Lemma~\ref{geo_exp}(c), and
+$Q(\sigma_\zeta(0),\sigma_\zeta(t_2))=t_2^2\,\sg(\dot\sigma_\zeta(0),\dot\sigma_\zeta(0))=0$. By
+Lemma~\ref{lem_world_function}(b), $\sigma_\zeta(t_2)\notin I^+(\sigma_\zeta(0))$. Thus $\zeta\in\cV(p_0)$ (with $b=t_2$).
+\end{proof}
+
+\begin{lemma}[Quadratic forms vanishing on an open piece of the null cone]\label{geo_null_quadratic}
+\lean{LorentzianCalderon.IsLorentzian.eq_smul_inv_of_null}
+Let $\sg_p$ be a Lorentzian scalar product on $\R^{1+n}$, $n\ge2$, let $U\subset(\R^{1+n})^*$ be open and contain a nonzero
+covector $\xi_0$ with $\sg_p(\xi_0,\xi_0)=0$, and let $h$ be a symmetric bilinear form on $(\R^{1+n})^*$ with $h(\xi,\xi)=0$
+for all $\xi\in U$ with $\sg_p(\xi,\xi)=0$. Then $h=c\,\sg_p^{-1}$ for some $c\in\R$, where $\sg_p^{-1}$ denotes the induced
+scalar product on covectors.
+\end{lemma}
+\begin{proof}
+Write $B=\sg_p^{-1}$. In a basis in which $B$ is the Minkowski form $\mathrm{diag}(-1,1,\dots,1)$, so that the claim is
+invariant under the change of basis, we proceed in two steps.
+
+\emph{Step 1: $h(v,v)=0$ for every nonzero $B$-null $v$.} Among $e_0+e_1$, $e_0-e_1$, $e_0+e_2$ (here $n\ge2$ is used) a nonzero
+null vector is $B$-orthogonal to at most one, since a null $x$ satisfies $x_0\ne0$ and $x_1^2+x_2^2\le x_0^2$; so there is a null
+$\zeta$ with $B(\zeta,\xi_0)\ne0\ne B(\zeta,v)$. Let $\gamma=-1/(2B(\zeta,\xi_0))$ and
+\[
+F(w)=\gamma\bigl(B(w,w)\,\zeta-2B(\zeta,w)\,w\bigr).
+\]
+Then $B(F(w),F(w))=0$ for all $w$ (as $B(\zeta,\zeta)=0$), $F(w)=-2\gamma B(\zeta,w)\,w$ for null $w$, and $F(\xi_0)=\xi_0$. So
+$F(w)\in U$ is null for $w$ near $\xi_0$, and the polynomial $w\mapsto h(F(w),F(w))$ vanishes near $\xi_0$, hence identically.
+At $w=v$ it equals $4\gamma^2B(\zeta,v)^2h(v,v)$, so $h(v,v)=0$.
+
+\emph{Step 2.} Testing Step 1 on the null vectors $e_0\pm e_a$, $a\ge1$, gives $h_{0a}=0$ and $h_{aa}=-h_{00}$, and on
+$5e_0+3e_a+4e_b$, $1\le a\ne b$, then gives $h_{ab}=0$. So $h=-h_{00}B$.
+\end{proof}
+
+\begin{lemma}[Null covectors in an open set span]\label{lem_span}
+\lean{LorentzianCalderon.IsLorentzian.exists_finset_null_span, LorentzianCalderon.IsLorentzian.span_nullCovectors, LorentzianCalderon.IsLorentzian.mem_span_nullCovectors}
+Let $\sg_p$ be a Lorentzian scalar product on $\R^{1+n}$, $n\ge2$, and let $\cC$ be a nonempty open subset of the null
+cone $\{\xi\in(\R^{1+n})^*\setminus0:\sg_p(\xi,\xi)=0\}$. Then $\cC$ spans $(\R^{1+n})^*$, and
+$\{\sg_p\}\cup\{\xi\otimes\xi:\xi\in\cC\}$ spans $\Sym$. In particular there is a finite subset of $\cC$ which contains a basis
+of $(\R^{1+n})^*$ and whose tensors $\xi\otimes\xi$ span $\Sym$ together with $\sg_p$.
+\end{lemma}
+\begin{proof}
+Let $U$ be open with $\cC=U\cap\{\xi\ne0:\sg_p(\xi,\xi)=0\}$. If $X\in\R^{1+n}$ satisfies $\xi(X)=0$ for all $\xi\in\cC$,
+then $h=X\otimes X$ satisfies the hypothesis of Lemma~\ref{geo_null_quadratic}, so $X\otimes X=c\,\sg_p^{-1}$. As $n\ge1$,
+there is $z\ne0$ with $\langle z,X\rangle=0$, i.e.\ $z$ in the kernel of $X\otimes X$, while $\sg_p^{-1}$ is invertible; so
+$c=0$ and $X=0$. Hence $\cC$ spans. Similarly, a linear form on $\Sym$ which vanishes on $\sg_p$ and on all $\xi\otimes\xi$,
+$\xi\in\cC$, is $m\mapsto h^{ab}m_{ab}$ for a symmetric $h$ with $h(\xi,\xi)=0$ for $\xi\in\cC$; by
+Lemma~\ref{geo_null_quadratic}, $h=c\,\sg_p^{-1}$, and $0=h^{ab}(\sg_p)_{ab}=(n+1)c$ gives $h=0$. Hence the second set spans.
+For the finite subset, take a basis of $(\R^{1+n})^*$ inside $\cC$, and for each element of a basis of $\Sym$ the finitely
+many $\xi\in\cC$ needed to express it.
+\end{proof}
+\section{Waves with a single front generated by exterior sources}\label{waves}
+
+Lemmas~\ref{lem_calculus}--\ref{lem_conormal}, \ref{wav_flowbox} and \ref{wav_amplitude} are local: they hold for an
+arbitrary smooth Lorentzian metric $\sg$ on $\R^{1+n}$, and global hyperbolicity is not used. For a function $\varphi$ we
+write $Z=Z_{\sg,\varphi}=-\grad_\sg\varphi$, so that $Zu=du(Z)=-\sg(d\varphi,du)$; the function $2Zu+(\Box_\sg\varphi)\,u$
+is the \emph{transport coefficient} of $u$.
+
+\begin{lemma}[Calculus of progressing waves]\label{lem_calculus}
+\lean{LorentzianCalderon.box_mul_comp, LorentzianCalderon.box_comp_sub_eq, LorentzianCalderon.coform_d_comp_sub, LorentzianCalderon.iteratedDeriv_amplitudeRemainder}
+Let $\cT$ be open, $\varphi\in C^\infty(\cT)$ and $Z=Z_{\sg,\varphi}$.
+\begin{itemize}
+\item[\textup{(a)}] For a $C^2$ function $u$ and a smooth function $k$ of one variable,
+\begin{equation}\label{eq_calch}
+\Box_\sg(u\,k(\varphi))=k(\varphi)\Box_\sg u+k'(\varphi)(2Zu+u\,\Box_\sg\varphi)-k''(\varphi)\,u\,\sg(d\varphi,d\varphi).
+\end{equation}
+\end{itemize}
+Assume now $\sg(d\varphi,d\varphi)=0$ on $\cT$. Let $B\in C^\infty(\cT\times\R)$, $B=B(x,r)$, and
+\[
+R(x,r)=\Box_{\sg,x}B(x,r)+2Z_x\partial_rB(x,r)+(\Box_\sg\varphi)(x)\,\partial_rB(x,r).
+\]
+\begin{itemize}
+\item[\textup{(b)}] For every $s\in\R$, on $\cT$,
+\[
+\Box_\sg\bigl[B(\cdot,\varphi-s)\bigr]=R(\cdot,\varphi-s),\qquad Z\bigl[B(\cdot,\varphi-s)\bigr]=(Z_xB)(\cdot,\varphi-s);
+\]
+in particular $Z[B(\cdot,\varphi-s)]=Z\bigl(B(\cdot,0)\bigr)$ on $\{\varphi=s\}$.
+\item[\textup{(c)}] If $\partial_r^kB(\cdot,0)=b_k$ on $\cT$ for all $k\ge0$, then
+$\partial_r^kR(\cdot,0)=\Box_\sg b_k+2Zb_{k+1}+(\Box_\sg\varphi)\,b_{k+1}$ for all $k$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+(a) is the product and chain rule in coordinates. (b) By the chain rule, $d[B(\cdot,\varphi-s)]=(d_xB+\partial_rB\,d\varphi)(\cdot,\varphi-s)$;
+since $\sg(d\varphi,d\varphi)=0$, this gives the formula for $Z$, and differentiating once more,
+\[
+\Box_\sg\bigl[B(x,\varphi(x)-s)\bigr]=\bigl(\Box_{\sg,x}B+2Z_x\partial_rB+(\Box_\sg\varphi)\,\partial_rB
+-\sg(d\varphi,d\varphi)\,\partial_r^2B\bigr)(x,\varphi(x)-s),
+\]
+whose last term vanishes. (c) $R$ is built from $B$ by an operator in $x$ whose coefficients do not depend on $r$, so
+$\partial_rR$ is built from $\partial_rB$ in the same way, and by induction $\partial_r^kR$ from $\partial_r^kB$. Evaluating at
+$r=0$ gives the claim.
+\end{proof}
+
+\begin{lemma}[Functions vanishing on a level set]\label{wav_lipschitz}
+\lean{LorentzianCalderon.exists_abs_le_mul_abs_sub}
+Let $m,\varphi\in C^1(\R^{1+n})$, $s\in\R$, and let $K$ be compact with $m=0$ outside $K$, $m=0$ on $\{\varphi=s\}$ and
+$d\varphi\ne0$ on $K\cap\{\varphi=s\}$. Then there is $C\ge0$ with $|m|\le C|\varphi-s|$ on $\R^{1+n}$.
+\end{lemma}
+\begin{proof}
+By compactness it suffices to find the bound near each $p\in K$. If $\varphi(p)\ne s$, then $|\varphi-s|\ge|\varphi(p)-s|/2$
+near $p$ and $m$ is bounded. If $\varphi(p)=s$, choose $v$ with $d\varphi_p(v)=1$ and $r>0$ with $d\varphi(v)>1/2$ on the
+ball $B(p,r)$, and let $L$ bound $|dm|$ there. For $x$ close to $p$ and $T=2|\varphi(x)-s|$ the segment $x+tv$, $|t|\le T$,
+lies in $B(p,r)$, and $t\mapsto\varphi(x+tv)-s$ changes sign on $[-T,T]$; so $\varphi(x+tv)=s$ for some $|t|\le T$, and
+$|m(x)|=|m(x)-m(x+tv)|\le L|t||v|\le2L|v|\,|\varphi(x)-s|$.
+\end{proof}
+
+\begin{lemma}[Weak jump identity]\label{wav_jump}
+\lean{LorentzianCalderon.integral_indicator_mul_box_eq}
+Let $V$ be open, $u,\varphi\in C^\infty(V)$ with $\sg(d\varphi,d\varphi)=0$ and $d\varphi\ne0$ on $V$, $s\in\R$, and
+$h\in C_c^\infty(\R^{1+n})$ with $\supp h\subset V$. If $2Zu+u\,\Box_\sg\varphi=0$ on $\supp h\cap\{\varphi=s\}$, then
+\[
+\int_{\{\varphi>s\}}u\,\Box_\sg h\,dV_\sg=\int_{\{\varphi>s\}}(\Box_\sg u)\,h\,dV_\sg .
+\]
+\end{lemma}
+\begin{proof}
+Multiplying $u$ and $\varphi$ by a cut-off in $C_c^\infty(V)$ equal to $1$ near $\supp h$ changes neither side nor the
+hypotheses, so we may assume $u,\varphi\in C^\infty(\R^{1+n})$. Let $H_1\in C^\infty(\R)$ be nondecreasing with $H_1=0$ on
+$(-\infty,0]$ and $H_1=1$ on $[1,\infty)$, and $H_\epsilon(r)=H_1((r-s)/\epsilon)$. By \eqref{eq_calch} with $k=H_\epsilon$
+and Green's identity (Lemma~\ref{lem_green_identity}) $\int w\,\Box_\sg h\,dV_\sg=\int(\Box_\sg w)\,h\,dV_\sg$ for $w=u\,H_\epsilon(\varphi)$,
+\[
+\int u\,H_\epsilon(\varphi)\,\Box_\sg h\,dV_\sg=\int H_\epsilon(\varphi)\,(\Box_\sg u)\,h\,dV_\sg+\int H_\epsilon'(\varphi)\,m\,dx,
+\qquad m=(2Zu+u\,\Box_\sg\varphi)\,h\,|\det\sg|^{1/2}.
+\]
+As $\epsilon\to0$, $H_\epsilon(\varphi)\to\mathbf 1_{\{\varphi>s\}}$ pointwise and boundedly, so the first two integrals
+converge to the two sides of the claim by dominated convergence. By Lemma~\ref{wav_lipschitz} (with $K=\supp h$),
+$|m|\le C|\varphi-s|$, so
+\[
+|H_\epsilon'(\varphi)\,m|\le C\,\bigl|\tfrac{\varphi-s}{\epsilon}\,H_1'\bigl(\tfrac{\varphi-s}{\epsilon}\bigr)\bigr|\le
+C\sup_{t}|t\,H_1'(t)|
+\]
+on $\supp h$ and $0$ outside, and $H_\epsilon'(\varphi)m\to0$ pointwise (on $\{\varphi\ne s\}$ because $H_1'$ vanishes
+outside $[0,1]$, on $\{\varphi=s\}$ because $m=0$ there). By dominated convergence the last integral tends to $0$.
+\end{proof}
+
+\begin{lemma}[Hadamard's lemma with a parameter; the conormal conditions]\label{lem_conormal}
+\lean{LorentzianCalderon.exists_eq_sub_mul_of_eq_zero}
+Let $V\subset\R^{1+n}$ be open, $\varphi\in C^\infty(V)$, and $f\in C^\infty(\R\times V)$ with $f(\varphi(x),x)=0$ for
+$x\in V$. Then there is $c\in C^\infty(\R\times V)$ with $f(s,x)=(\varphi(x)-s)\,c(s,x)$. In particular, for
+$u\in C^\infty(\R\times V)$, $u_s=u(s,\cdot)$, and $\varphi$ eikonal for $\sg$ on $V$:
+\begin{itemize}
+\item[\textup{(a)}] if $\Box_\sg u_s=0$ on $V\cap\{\varphi\ge s\}$ for all $s$, there is $a\in C^\infty(\R\times V)$ with
+$\Box_\sg u_s=(\varphi-s)\,a_s$ and $a_s=0$ on $V\cap\{\varphi>s\}$;
+\item[\textup{(b)}] if $2Zu_s+(\Box_\sg\varphi)u_s=0$ on $V\cap\{\varphi=s\}$ for all $s$, there is $b\in C^\infty(\R\times V)$
+with $2Zu_s+(\Box_\sg\varphi)u_s=(\varphi-s)\,b_s$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+Put $c(s,x)=-\int_0^1\partial_sf\bigl(\varphi(x)+t(s-\varphi(x)),x\bigr)\,dt$, smooth by differentiation under the
+integral. The derivative of $t\mapsto f(\varphi(x)+t(s-\varphi(x)),x)$ is $(s-\varphi(x))$ times the integrand, so the
+fundamental theorem of calculus and $f(\varphi(x),x)=0$ give $f(s,x)=(\varphi(x)-s)\,c(s,x)$. For (a) and (b) apply this to
+$f(s,x)=(\Box_\sg u_s)(x)$ and to the transport coefficient of $u_s$, both smooth on $\R\times V$; in (a), $a_s=0$ on
+$\{\varphi>s\}$ because there $f=0$ and $\varphi-s\ne0$.
+\end{proof}
+
+\begin{lemma}[Transport along a flow]\label{wav_flowbox}
+\lean{LorentzianCalderon.FlowBoxData.exists_transport}
+Let $\cT$ be open, $\hat Z$ a smooth vector field on $\cT$ and $\varrho\in C^\infty(\R^{1+n})$ with $\hat Z\varrho=1$ on
+$\cT$, and let $\tau_0\in\R$. Let $\cB$ be the set of $x\in\cT$ whose integral curve of $\hat Z$ in $\cT$ (Fact~\ref{fact_ode})
+reaches the level $\{\varrho=\tau_0\}$, and for $x\in\cB$ let $\pi(x)$ be the point where it does. Then $\cB$ is open and
+$\pi\in C^\infty(\cB)$. For $a,f\in C^\infty(\cB)$ there is $b\in C^\infty(\cB)$ with $\hat Zb+ab=f$ on $\cB$ such that, for
+$x\in\cB$:
+\begin{itemize}
+\item[\textup{(i)}] $b(x)=0$ if $f$ vanishes at all $y\in\cB$ with $\pi(y)=\pi(x)$ and $\varrho(y)$ between $\tau_0$ and
+$\varrho(x)$;
+\item[\textup{(ii)}] if $f\ge0$ on $\cB$, then $b(x)>0$ as soon as $f(y)>0$ for some $y\in\cB$ with $\pi(y)=\pi(x)$ and
+$\tau_0\le\varrho(y)<\varrho(x)$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+Since $\hat Z\varrho=1$, the flow $X(t;t_0,x_0)$ of $\hat Z$, parametrized so that $X(t_0;t_0,x_0)=x_0$, satisfies
+$\varrho(X(t;t_0,x_0))=\varrho(x_0)+t-t_0$; so $\cB=\{x\in\cT:(\tau_0,\varrho(x),x)\text{ is in the domain of }X\}$ and
+$\pi(x)=X(\tau_0;\varrho(x),x)$, and both claims follow from Fact~\ref{fact_ode}. Consider the system
+$\dot z=\hat Z(z)$, $\dot\beta=-a(z)\beta+f(z)$ on $\cB\times\R$, with flow $X_a$, smooth on its open domain
+(Fact~\ref{fact_ode}). For $x\in\cB$, along the curve $\gamma(t)=X(t;\varrho(x),x)$, $t$ between $\tau_0$ and $\varrho(x)$,
+which stays in $\cB$, the linear equation $\dot\beta=-a(\gamma)\beta+f(\gamma)$ has a solution with $\beta(\tau_0)=0$ on the
+whole interval, given by the integrating factor $e^{-A}\int_{\tau_0}^{t}e^{A}f(\gamma)$, $A(t)=\int_{\tau_0}^ta(\gamma)$. Hence $(\varrho(x);\tau_0,(\pi(x),0))$ lies in the domain of
+$X_a$ and $X_a(\varrho(x);\tau_0,(\pi(x),0))=(x,\beta(\varrho(x)))$. Put $b(x)=\beta(\varrho(x))$, the second component of
+$X_a(\varrho(x);\tau_0,(\pi(x),0))$; it is smooth on $\cB$. Since $\varrho$ and $\pi$ are constant and the time,
+respectively, along the integral curves of $\hat Z$, $s\mapsto b(\gamma(s))$ is the solution $\beta$ above, and differentiating
+at $s=\varrho(x)$ gives $\hat Zb+ab=f$. (i) Under its hypothesis $(\gamma,0)$ solves the system, so $\beta=0$ by uniqueness.
+(ii) With $A(t)=\int_{\tau_0}^ta(\gamma)$, the function $\beta e^{A}$ has derivative $f(\gamma)e^{A}\ge0$, which is positive
+near the parameter $\varrho(y)$ of $y$; since $\beta e^A=0$ at $\tau_0$, it is positive at $\varrho(x)$.
+\end{proof}
+
+In the rest of this section we work in the situation provided by Lemma~\ref{lem_emission}: $\sigma\colon[0,b]\to\R^{1+n}$
+is a future-directed null geodesic with $\sigma(b)\notin I^+(\sigma(0))$, $0<t_1<1<t_2<b$, $\eta>0$, $\cT$ is an open
+neighbourhood of $\sigma([t_1,t_2])$, $\varphi\in C^\infty(\cT)$ is eikonal of future type with values in $(-\eta,\eta)$,
+$\varphi(\sigma(t))=0$ and $Z_{\sg,\varphi}(\sigma(t))$ is a positive multiple of $\dot\sigma(t)$ for $t\in[t_1,t_2]$, and
+$\mu\colon(-\eta,\eta)\to\R^{1+n}$ is a smooth future-directed timelike curve with
+$J^+(\mu(s))\cap\cT=\{x\in\cT:\varphi(x)\ge s\}$ for $|s|<\eta$. Let $Z=Z_{\sg,\varphi}$ and $p_0=\sigma(1)$.
+
+\begin{lemma}[Flow box and transport equations]\label{wav_transport}
+\lean{LorentzianCalderon.IsEmission.exists_isTransport, LorentzianCalderon.exists_transport_of_emission}
+Let $t_*\in(t_1,1)$ and let $\cN_*$ be an open neighbourhood of $\sigma(t_*)$. There are $\theta\in C_c^\infty(\R^{1+n})$ with
+$\theta\ge0$, $\supp\theta\subset\cN_*\cap\cT$ and $\theta(\sigma(t_*))>0$; an open set $\cB\subset\cT$ and functions
+$b_k\in C^\infty(\cB)$, $k\ge0$, with
+\begin{equation}\label{eq_transport_bk}
+2Zb_0+(\Box_\sg\varphi)\,b_0=\theta,\qquad 2Zb_{k+1}+(\Box_\sg\varphi)\,b_{k+1}=-\Box_\sg b_k\qquad\text{on }\cB;
+\end{equation}
+a function $\chi\in C_c^\infty(\R^{1+n})$ with $\supp\chi\subset\cB$, a Cauchy temporal function $\varrho$ and
+$\varrho_{\mathrm{out}}\in\R$ such that $\chi=1$ near every $x\in\cB$ with $\varrho(x)<\varrho_{\mathrm{out}}$ and $b_k(x)\ne0$
+for some $k$; and an open neighbourhood $V$ of $p_0$ with $\chi=1$ on $V$, $\varrho<\varrho_{\mathrm{out}}$ on $V$,
+$V\cap\supp\theta=\emptyset$ and $b_0>0$ on $V$.
+\end{lemma}
+\begin{proof}
+\emph{The flow.} Let $\varrho$ be a Cauchy temporal function (Fact~\ref{fact_cauchy_temporal}). Since $Z$ is future-directed
+causal and $-\grad\varrho$ future-directed timelike, $q:=Z\varrho>0$ on $\cT$, and $\hat Z=Z/q$ is smooth with $\hat Z\varrho=1$.
+Also $\dot\sigma\varrho>0$, so $\varrho\circ\sigma$ is strictly increasing on $[t_1,t_2]$, and since $\hat Z(\sigma(t))$ is a
+positive multiple of $\dot\sigma(t)$, $\sigma$ reparametrized by $\varrho$ is an integral curve of $\hat Z$. Put
+$t_{\mathrm{in}}=(t_1+t_*)/2$, $t_{\mathrm{out}}=(1+t_2)/2$, $\tau_{\mathrm{in}}=\varrho(\sigma(t_{\mathrm{in}}))$,
+$\varrho_{\mathrm{out}}=\varrho(\sigma(t_{\mathrm{out}}))$ and $c_1=(\tau_{\mathrm{in}}+\varrho(\sigma(t_*)))/2$, so that
+$\tau_{\mathrm{in}}<c_1<\varrho(\sigma(t_*))<\varrho(p_0)<\varrho_{\mathrm{out}}$. Let $\cB$ and $\pi$ be as in
+Lemma~\ref{wav_flowbox} for $\hat Z$ and the level $\tau_0=\tau_{\mathrm{in}}$; then $\sigma([t_{\mathrm{in}},t_{\mathrm{out}}])\subset\cB$
+and $\pi=\sigma(t_{\mathrm{in}})$ there.
+
+\emph{The source.} The integral curve of $\hat Z$ through $\sigma(t_{\mathrm{in}})$ reaches the level $\varrho_{\mathrm{out}}$ in
+$\cT$; by compactness of $[\tau_{\mathrm{in}},\varrho_{\mathrm{out}}]$ and openness of the domain of the flow, so do those
+through points near $\sigma(t_{\mathrm{in}})$. By continuity of $\pi$, there is a closed ball around $\sigma(t_*)$ of points
+$x\in\cN_*\cap\cB$ with $c_1<\varrho(x)<\varrho(p_0)$ whose integral curve through $\pi(x)$ reaches the level
+$\varrho_{\mathrm{out}}$ in $\cT$. Let $\theta\ge0$ be a smooth bump function supported in this ball with
+$\theta(\sigma(t_*))=1$. Then $K=\pi(\supp\theta)$ is compact, and so is the union $C$ of the arcs of the integral curves
+through the points of $K$ between the levels $c_1$ and $\varrho_{\mathrm{out}}$; $C\subset\cB$. Let $\chi\in C_c^\infty(\cB)$
+be equal to $1$ on a neighbourhood of $C$, and $O$ the open set of points near which $\chi=1$.
+
+\emph{The transport equations.} Since $2Zb+(\Box_\sg\varphi)b=2q(\hat Zb+ab)$ with $a=\Box_\sg\varphi/(2q)$,
+Lemma~\ref{wav_flowbox} gives successively $b_0$ with $\hat Zb_0+ab_0=\theta/(2q)$ and $b_{k+1}$ with
+$\hat Zb_{k+1}+ab_{k+1}=-\Box_\sg b_k/(2q)$, all vanishing at the level $\tau_{\mathrm{in}}$; they satisfy
+\eqref{eq_transport_bk}. The open set
+$O_v=(\cB\cap\pi^{-1}(\R^{1+n}\setminus K))\cup(\cB\cap\{\varrho<c_1\})$ contains, with each point $x$, the points $y\in\cB$
+with $\pi(y)=\pi(x)$ and $\varrho(y)$ between $\tau_{\mathrm{in}}$ and $\varrho(x)$, and $\theta=0$ on $O_v$. By
+Lemma~\ref{wav_flowbox}(i) and induction on $k$ (if $b_k=0$ on the open set $O_v$, then $\Box_\sg b_k=0$ there), all $b_k$
+vanish on $O_v$. Hence if $x\in\cB$, $\varrho(x)<\varrho_{\mathrm{out}}$ and $b_k(x)\ne0$ for some $k$, then $\pi(x)\in K$ and
+$\varrho(x)\ge c_1$, so $x\in C$ and $\chi=1$ near $x$.
+
+\emph{The neighbourhood of $p_0$.} Let
+$V=O\cap\{\varrho<\varrho_{\mathrm{out}}\}\cap(\R^{1+n}\setminus\supp\theta)\cap\{x\in\cB:b_0(x)>0\}$, an open set on which
+$\chi=1$. It contains $p_0$: $p_0\in C$ because $\pi(p_0)=\sigma(t_{\mathrm{in}})=\pi(\sigma(t_*))\in K$ and
+$c_1<\varrho(p_0)<\varrho_{\mathrm{out}}$; $p_0\notin\supp\theta$ because $\varrho<\varrho(p_0)$ on $\supp\theta$; and
+$b_0(p_0)>0$ by Lemma~\ref{wav_flowbox}(ii), since $\theta/(2q)\ge0$ and $\sigma(t_*)$ lies on the integral curve through
+$p_0$ with $\tau_{\mathrm{in}}\le\varrho(\sigma(t_*))<\varrho(p_0)$ and $\theta(\sigma(t_*))>0$.
+\end{proof}
+
+\begin{lemma}[Amplitudes]\label{wav_amplitude}
+\lean{LorentzianCalderon.exists_amplitude_of_transport, LorentzianCalderon.IsTransport.exists_isAmplitude}
+Let $U$ be open, $\varphi\in C^\infty(U)$ with $\sg(d\varphi,d\varphi)=0$ on $U$, $Z=Z_{\sg,\varphi}$, and $b_k\in C^\infty(U)$,
+$k\ge0$, with $2Zb_{k+1}+(\Box_\sg\varphi)\,b_{k+1}=-\Box_\sg b_k$ on $U$. There are $B,R\in C^\infty(U\times\R)$ such that
+\begin{itemize}
+\item[\textup{(i)}] $B(\cdot,0)=b_0$, and $B(x,r)=0$ for all $r$ if $b_k(x)=0$ for all $k$;
+\item[\textup{(ii)}] $\Box_\sg[B(\cdot,\varphi-s)]=R(\cdot,\varphi-s)$ on $U$ for all $s\in\R$, $R(\cdot,0)=0$, and
+$R_+(x,r):=R(x,r)H(r)$ is smooth on $U\times\R$;
+\item[\textup{(iii)}] $Z[B(\cdot,\varphi-s)]=Zb_0$ on $U\cap\{\varphi=s\}$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+By Borel's lemma with parameters (Fact~\ref{fact_borel}) there is $B\in C^\infty(U\times\R)$ with $\partial_r^kB(\cdot,0)=b_k$ for all $k$ and with $B(x,\cdot)=0$ whenever all
+$b_k(x)$ vanish. This is (i). Let $R$ be as in Lemma~\ref{lem_calculus}; then (ii) and (iii) except the smoothness of
+$R_+$ follow from Lemma~\ref{lem_calculus}(b), and by Lemma~\ref{lem_calculus}(c) and the hierarchy,
+$\partial_r^kR(\cdot,0)=\Box_\sg b_k+2Zb_{k+1}+(\Box_\sg\varphi)b_{k+1}=0$ for all $k$. Applying Lemma~\ref{lem_conormal}
+(with the function $0$ in place of $\varphi$) repeatedly, for every $m$ we get $R(x,r)=r^mQ_m(x,r)$ with $Q_m\in C^\infty(U\times\R)$
+(again with vanishing $r$-derivatives at $r=0$). Then $R_+(x,r)=\max(r,0)^{m+1}Q_{m+1}(x,r)$, and $r\mapsto\max(r,0)^{m+1}$
+is of class $C^m$; so $R_+$ is of class $C^m$ for every $m$.
+\end{proof}
+
+\begin{lemma}[One-sided retarded waves]\label{lem_onesided}
+\lean{LorentzianCalderon.IsEmission.exists_isOneSidedWave, LorentzianCalderon.IsAmplitude.isOneSidedWave}
+Let $t_*\in(t_1,1)$ and let $\cN_*$ be an open neighbourhood of $\sigma(t_*)$. Then there are
+$\theta\in C_c^\infty(\R^{1+n})$ with $\theta\ge0$, $\supp\theta\subset\cN_*\cap\cT$ and $\theta(\sigma(t_*))>0$, an open
+neighbourhood $V'\subset\cT$ of $p_0$, a function $u$ with $u_s=u(s,\cdot)$, smooth on $(-\eta,\eta)\times V'$, and for
+$|s|<\eta$ sources $F_s$ (Definition~\ref{conv_sources}) with the following properties:
+\begin{itemize}
+\item[\textup{(i)}] $F_s$ is supported in $\supp\theta\cap\{\varphi=s\}$, and $\supp\theta\cap\{\varphi=s\}\subset J^+(\mu(s))$;
+\item[\textup{(ii)}] $G^\ret_\sg F_s$ agrees on $V'$ with $u_s\,H(\varphi-s)$;
+\item[\textup{(iii)}] $u_s>0$ on $\{\varphi=s\}\cap V'$;
+\item[\textup{(iv)}] $V'\cap\supp\theta=\emptyset$;
+\item[\textup{(v)}] there are $a,b\in C^\infty((-\eta,\eta)\times V')$ with, on $V'$, $\Box_\sg u_s=(\varphi-s)\,a_s$,
+$a_s=0$ on $\{\varphi>s\}$, and $2Zu_s+(\Box_\sg\varphi)u_s=(\varphi-s)\,b_s$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+\emph{Amplitude.} Take $\theta$, $\cB$, $b_k$, $\chi$, $\varrho$, $\varrho_{\mathrm{out}}$ and $V'=V$ from
+Lemma~\ref{wav_transport}, and $B$, $R$ from Lemma~\ref{wav_amplitude} on $U=\cB$. Then $V'\subset\cB$, since $\chi=1$ on
+$V'$ and $\supp\chi\subset\cB$. Put $\tilde u_s=B(\cdot,\varphi-s)$ on $\cB$. By Lemma~\ref{wav_amplitude} and
+\eqref{eq_transport_bk}, on $\cB$,
+\begin{equation}\label{wav_eq_amplitude}
+\Box_\sg\tilde u_s=R(\cdot,\varphi-s),\qquad 2Z\tilde u_s+(\Box_\sg\varphi)\tilde u_s=\theta\quad\text{on }\{\varphi=s\},
+\end{equation}
+and by Lemma~\ref{wav_amplitude}(i), $\chi=1$ near every $x\in\cB$ with $\varrho(x)<\varrho_{\mathrm{out}}$ and
+$B(x,r)\ne0$ for some $r$. The function $f_s=\chi R_+(\cdot,\varphi-s)$, extended by zero, is smooth in $(s,x)$, with support
+in $\supp\chi\cap\{\varphi\ge s\}$. Let $w_s=G^\ret_\sg f_s$; it is smooth in $(s,x)$ (Lemma~\ref{lem_green_operators}).
+
+\emph{The sources.} Define, for $\psi\in C^\infty(\R^{1+n})$,
+\[
+F_s(\psi)=\int_{\{\varphi>s\}}\tilde u_s\,\Box_\sg(\chi\psi)\,dV_\sg-\int f_s\,\psi\,dV_\sg ,
+\]
+that is, $F_s=\Box_\sg\Pi_s-f_s-[\Box_\sg,\chi]\bigl(\tilde u_sH(\varphi-s)\bigr)$ with $\Pi_s=\chi\tilde u_sH(\varphi-s)$.
+$F_s$ is linear, and $\supp\theta\cap\{\varphi=s\}$ is compact. Let $\psi$ vanish near $\supp\theta\cap\{\varphi=s\}$ and put
+$h=\chi\psi\in C_c^\infty(\cB)$. At points of $\supp h\cap\{\varphi=s\}$ we have $\theta=0$, so by
+\eqref{wav_eq_amplitude} the transport coefficient of $\tilde u_s$ vanishes there, and Lemma~\ref{wav_jump} on $\cB$ gives
+\[
+\int_{\{\varphi>s\}}\tilde u_s\,\Box_\sg h\,dV_\sg=\int_{\{\varphi>s\}}R(\cdot,\varphi-s)\,\chi\psi\,dV_\sg=\int f_s\,\psi\,dV_\sg .
+\]
+So $F_s(\psi)=0$: $F_s$ is a source supported in $\supp\theta\cap\{\varphi=s\}$. Since $\supp\theta\subset\cT$, the inclusion in
+(i) is the property $J^+(\mu(s))\cap\cT=\{\varphi\ge s\}$.
+
+\emph{The retarded solution.} Let $h\in C_c^\infty(\R^{1+n})$ with $\supp h\subset V'$. By the duality of
+Lemma~\ref{lem_green_duality}, $\int f_s\,G^\adv_\sg h\,dV_\sg=\int w_s\,h\,dV_\sg$. We claim that
+$\mathbf 1_{\{\varphi>s\}}\tilde u_s\,\Box_\sg(\chi G^\adv_\sg h)=\mathbf 1_{\{\varphi>s\}}\tilde u_s\,h$ at every point $x$
+where the left factor is nonzero. If $x\in\cB$ and $\varrho(x)<\varrho_{\mathrm{out}}$, then $\chi=1$ near $x$ and
+$\Box_\sg G^\adv_\sg h=h$ (Lemma~\ref{lem_green_operators}). If $x\in\cB$ and $\varrho(x)\ge\varrho_{\mathrm{out}}$, then $x\notin V'$, so $h(x)=0$, and
+$x\notin J^-(\supp h)$ because $\varrho$ increases along causal curves and $\varrho<\varrho_{\mathrm{out}}$ on $V'$; since
+$J^-(\supp h)$ is closed, $G^\adv_\sg h$ vanishes near $x$. If $x\notin\cB$, then $\chi$ vanishes near $x$ and $h(x)=0$.
+Hence, by the definition of $G^\ret_\sg F_s$ (Lemma~\ref{lem_green_distributions}),
+\begin{equation}\label{eq_usplit}
+G^\ret_\sg F_s(h)=F_s(G^\adv_\sg h)=\int\bigl(\mathbf 1_{\{\varphi>s\}}\tilde u_s-w_s\bigr)\,h\,dV_\sg .
+\end{equation}
+
+\emph{$w_s$ near the front.} The support of $f_s$ lies in $\cT\cap\{\varphi\ge s\}=\cT\cap J^+(\mu(s))$, so
+$\supp w_s\subset J^+(\mu(s))$ (Lemma~\ref{lem_green_operators}), and $J^+(\mu(s))\cap V'\subset\{\varphi\ge s\}$. Thus $w_s=0$ on
+$V'\cap\{\varphi<s\}$. Since $d\varphi\ne0$, every point of $V'\cap\{\varphi=s\}$ is a limit of points of $V'\cap\{\varphi<s\}$,
+so $w_s$ and $dw_s$ vanish on $V'\cap\{\varphi=s\}$.
+
+\emph{Conclusion.} Put $u_s=\chi\tilde u_s-w_s$, smooth in $(s,x)$; on $V'$, $u_s=\tilde u_s-w_s$ near each point.
+Since $V'\cap\{\varphi=s\}$ is a null set and $w_s=0$ on $V'\cap\{\varphi<s\}$, \eqref{eq_usplit} gives (ii). (iii):
+on $V'\cap\{\varphi=s\}$, $u_s=B(\cdot,0)=b_0>0$. (iv) is part of Lemma~\ref{wav_transport}. (v): on $V'$,
+$\Box_\sg u_s=R(\cdot,\varphi-s)-f_s=R(\cdot,\varphi-s)(1-H(\varphi-s))$, which vanishes on $\{\varphi\ge s\}$ since
+$R(\cdot,0)=0$; and on $V'\cap\{\varphi=s\}$, where $w_s$ and $dw_s$ vanish, the transport coefficient of $u_s$ equals
+that of $\tilde u_s$, which is $\theta=0$ by \eqref{wav_eq_amplitude} and (iv). Lemma~\ref{lem_conormal}, applied on $V'$
+(with $s$ ranging over $\R$, the functions above being defined for all $s$), gives $a$ and $b$.
+\end{proof}
+\section{The weighted energy inequality and the local continuation step}\label{local}
+
+Only the operators $\Box_g$ and $\Box_{g'}$ occur in this section, and global hyperbolicity is not used. Integrals are
+with respect to the Lebesgue measure $dx$, and $|dw|$ is the Euclidean norm of $(\partial_0w,\dots,\partial_nw)$.
+
+\begin{lemma}[The energy-momentum tensor]\label{lem_loc_tensor}
+\lean{LorentzianCalderon.IsLorentzForm.emTensor_nonneg, LorentzianCalderon.IsLorentzForm.emTensor_null_ge,
+LorentzianCalderon.IsLorentzForm.emTensor_self_pos}
+Let $M$ be a finite-dimensional real vector space and $B$ a symmetric bilinear form on $M$ such that for every $\beta$ with
+$B(\beta,\beta)<0$, $B(\xi,\xi)>0$ for all $\xi\ne0$ with $B(\xi,\beta)=0$ (for instance the inner product of covectors
+induced by a Lorentzian metric at a point). For $\xi\in M$, $w_0\in\R$ and $\lambda\ge0$ put
+\[
+T(\alpha,\beta)=B(\alpha,\xi)B(\beta,\xi)-\tfrac12B(\alpha,\beta)\bigl(B(\xi,\xi)+\lambda w_0^2\bigr).
+\]
+Let $B(\beta,\beta)<0$.
+\begin{itemize}
+\item[\textup{(a)}] If $B(\alpha,\alpha)\le0$ and $B(\alpha,\beta)\le0$, then $T(\alpha,\beta)\ge0$.
+\item[\textup{(b)}] If $B(\alpha,\alpha)=0$ and $B(\alpha,\beta)<0$, then with $k=-B(\alpha,\beta)$, $m^2=-B(\beta,\beta)$,
+\[
+T(\alpha,\beta)\ge\tfrac{m^2}{2k}B(\alpha,\xi)^2+\tfrac k2\lambda w_0^2 .
+\]
+\item[\textup{(c)}] If $\lambda=0$ and $\xi\ne0$, then $T(\beta,\beta)>0$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+We use repeatedly that $B(\zeta,\zeta)\ge0$ for every $\zeta$ with $B(\zeta,\beta)=0$.
+
+(a) If $B(\alpha,\beta)=0$, then $B(\alpha,\alpha)\ge0$, hence $B(\alpha,\alpha)=0$ and $\alpha=0$, so $T(\alpha,\beta)=0$.
+Otherwise $\zeta=B(\alpha,\beta)\xi-B(\xi,\beta)\alpha$ is orthogonal to $\beta$, and $B(\zeta,\zeta)\ge0$ reads
+\[
+-2B(\alpha,\beta)\Bigl[B(\alpha,\xi)B(\beta,\xi)-\tfrac12B(\alpha,\beta)B(\xi,\xi)\Bigr]\ge-B(\xi,\beta)^2B(\alpha,\alpha)\ge0 .
+\]
+As $-2B(\alpha,\beta)>0$, the bracket is nonnegative; the mass term $-\frac12B(\alpha,\beta)\lambda w_0^2$ is nonnegative too.
+
+(b) The vectors $v=k\xi+B(\xi,\beta)\alpha$ and $a=m^2\alpha-k\beta$ are orthogonal to $\beta$, hence so is $tv-a$ for every
+$t\in\R$, and $B(tv-a,tv-a)\ge0$ for all $t$. The discriminant gives $B(v,a)^2\le B(v,v)B(a,a)$. Using $B(\alpha,\alpha)=0$,
+$B(v,a)=-m^2kB(\alpha,\xi)$, $B(a,a)=m^2k^2$ and $B(v,v)=k^2B(\xi,\xi)+2kB(\xi,\beta)B(\alpha,\xi)$, so that
+$m^2B(\alpha,\xi)^2\le 2k\bigl[B(\alpha,\xi)B(\beta,\xi)-\frac12B(\alpha,\beta)B(\xi,\xi)\bigr]$. Adding the mass term
+$\frac k2\lambda w_0^2$ gives the claim.
+
+(c) The vector $B(\beta,\beta)\xi-B(\xi,\beta)\beta$ is orthogonal to $\beta$, which gives
+$B(\xi,\beta)^2-B(\beta,\beta)B(\xi,\xi)\ge0$, so $T(\beta,\beta)\ge\frac12B(\beta,\xi)^2$. If $B(\xi,\beta)\ne0$ this is
+positive; otherwise $B(\xi,\xi)>0$ and $T(\beta,\beta)=-\frac12B(\beta,\beta)B(\xi,\xi)>0$.
+\end{proof}
+
+In Lemmas~\ref{lem_loc_pointwise} and \ref{lem_energy}, $V\subset\R^{1+n}$ is open, $g$ is a smooth Lorentzian metric on
+$V$ with a time orientation, $\psi,\tilde\psi\in C^\infty(V)$ are temporal (Definition~\ref{def_temporal}), $\tau,c\in\R$
+are such that the \emph{lens}
+\[
+L=\{x\in V:\ \psi(x)\le\tau,\ \tilde\psi(x)\ge c\}
+\]
+is compact, $\rho=|\det g|^{1/2}$ and $X=-\grad_g\psi$. For a function $w$ of class $C^2$ and $\lambda\ge0$, $T_w$ denotes the
+form of Lemma~\ref{lem_loc_tensor} at each point, with $B$ the inner product of covectors induced by $g$, $\xi=dw$ and
+$w_0=w$; thus $T_w(df_1,df_2)$ is the energy-momentum tensor of $w$ with mass term $\lambda$, evaluated on the vectors
+$-\grad_gf_1$, $-\grad_gf_2$. Put
+\[
+P^j=\rho\,e^{2\sigma\psi}\Bigl(g^{jk}\partial_kw\ Xw-\tfrac12X^j\bigl(g(dw,dw)+\lambda w^2\bigr)\Bigr),
+\]
+that is, $\rho$ times the current $e^{2\sigma\psi}T^j{}_bX^b$. Since $Xw=-g(d\psi,dw)$, for every $C^1$ function $f$
+\begin{equation}\label{eq_loc_flux}
+P^j\partial_jf=-\rho\,e^{2\sigma\psi}\,T_w(df,d\psi).
+\end{equation}
+
+\begin{lemma}[Pointwise inequality for the divergence]\label{lem_loc_pointwise}
+\lean{LorentzianCalderon.Current.div_P, LorentzianCalderon.EnergySetting.step1}
+There are $\varepsilon_0,a,b,\sigma_0>0$ such that for all $\sigma\ge\sigma_0$, with $\lambda=\varepsilon_0^2\sigma^2$, all
+$x\in L$ and all $w$ of class $C^2$ near $x$,
+\[
+\partial_jP^j(x)\le e^{2\sigma\psi(x)}\Bigl(-a\sigma\bigl(|dw|^2+\sigma^2w^2\bigr)+\tfrac b\sigma|\Box_gw|^2\Bigr)(x).
+\]
+\end{lemma}
+\begin{proof}
+Differentiating $P^j$, the second derivatives of $w$ cancel by the symmetry of the Hessian, and
+\[
+\partial_jP^j=e^{2\sigma\psi}\Bigl(-2\sigma\rho\,T_w(d\psi,d\psi)+Xw\,\partial_j\bigl(\rho g^{jk}\partial_kw\bigr)-\rho\lambda\,w\,Xw+R\Bigr),
+\]
+where $\partial_j(\rho g^{jk}\partial_kw)=-\rho\,\Box_gw$ and $R$ is a quadratic form in $(dw,\sqrt\lambda\,w)$ whose
+coefficients are continuous functions on $V$ (built from $g^{-1}$, $\rho$, $X$ and their first derivatives).
+$T_w(d\psi,d\psi)$ is a quadratic form in $(dw,\sqrt\lambda\,w)$, positive definite at each point by
+Lemma~\ref{lem_loc_tensor}(c) and $-g(d\psi,d\psi)>0$. By compactness of $L$ and homogeneity there are constants
+$c_T,K,C_R>0$ and $0<\rho_0\le\rho_1$ with, on $L$,
+\[
+T_w(d\psi,d\psi)\ge c_T\bigl(|dw|^2+\lambda w^2\bigr),\quad |Xw|\le K|dw|,\quad |R|\le C_R\bigl(|dw|^2+\lambda w^2\bigr),\quad
+\rho_0\le\rho\le\rho_1 .
+\]
+Let $c_1=\rho_0c_T$, $\varepsilon_0=c_1/(2\rho_1K)$, $\lambda=\varepsilon_0^2\sigma^2$ and $\sigma\ge\max(1,4C_R/c_1)$.
+Then $|\rho\lambda wXw|\le\rho_1K\varepsilon_0\sigma(\varepsilon_0\sigma|w|)|dw|\le\frac{c_1}4\sigma(|dw|^2+\lambda w^2)$,
+$|\rho\,Xw\,\Box_gw|\le\frac{c_1}4\sigma|dw|^2+\frac{\rho_1^2K^2}{c_1\sigma}|\Box_gw|^2$ and
+$|R|\le\frac{c_1}4\sigma(|dw|^2+\lambda w^2)$, while $-2\sigma\rho T_w(d\psi,d\psi)\le-2c_1\sigma(|dw|^2+\lambda w^2)$.
+Since $|dw|^2+\lambda w^2\ge\min(1,\varepsilon_0^2)(|dw|^2+\sigma^2w^2)$, the claim follows with
+$a=c_1\min(1,\varepsilon_0^2)/4$ and $b=\rho_1^2K^2/c_1$.
+\end{proof}
+
+\begin{lemma}[Weighted energy inequality]\label{lem_energy}
+\lean{LorentzianCalderon.EnergySetting.energy_volume, LorentzianCalderon.EnergySetting.energy_superlevel,
+LorentzianCalderon.EnergySetting.energy_integrated}
+In the setting above let $\varphi\in C^\infty(V)$ be eikonal of future type (Definition~\ref{def_eikonal}) and
+$Z=Z_{g,\varphi}=-\grad_g\varphi$. There are $C>0$ and $\sigma_0\ge1$, depending only on $(g,\psi,\tilde\psi,\varphi,\tau,c)$,
+such that for all $\sigma\ge\sigma_0$:
+\begin{itemize}
+\item[\textup{(a)}] for every $w$ of class $C^2$ on a neighbourhood of $L$ with $w=0$ and $dw=0$ on $\{\psi=\tau\}\cap L$,
+\begin{equation}\label{eq_energy2}
+\sigma^2\int_{L}e^{2\sigma\psi}\bigl(|dw|^2+\sigma^2w^2\bigr)dx\le C\int_{L}e^{2\sigma\psi}|\Box_gw|^2dx ;
+\end{equation}
+\item[\textup{(b)}] for every $s\in\R$ and every $w$ of class $C^2$ on a neighbourhood of $L$ with $w=0$ and $dw=0$ on
+$\{\psi=\tau\}\cap\{\varphi\ge s\}\cap L$,
+\begin{equation}\label{eq_loc_energy_superlevel}
+\sigma^2\int_{L\cap\{\varphi>s\}}e^{2\sigma\psi}\bigl(|dw|^2+\sigma^2w^2\bigr)dx\le C\int_{L\cap\{\varphi>s\}}e^{2\sigma\psi}|\Box_gw|^2dx ;
+\end{equation}
+\item[\textup{(c)}] for all $s_1\le s_2$ and every family $(w_s)_{s\in\R}$ such that $(s,x)\mapsto w_s(x)$ is of class $C^2$
+on an open neighbourhood of $[s_1,s_2]\times L$ and, for $s\in[s_1,s_2]$, $w_s=0$ and $dw_s=0$ on
+$\{\psi=\tau\}\cap\{\varphi\ge s\}\cap L$,
+\begin{multline}\label{eq_energy}
+\sigma\int_{L\cap\{s_1\le\varphi\le s_2\}}e^{2\sigma\psi(x)}\Bigl(\bigl|(Zw_{\varphi(x)})(x)\bigr|^2+\sigma^2w_{\varphi(x)}(x)^2\Bigr)dx\\
+\le C\int_{s_1}^{s_2}\int_{L\cap\{\varphi>s\}}e^{2\sigma\psi}|\Box_gw_s|^2\,dx\,ds .
+\end{multline}
+\end{itemize}
+Here $(Zw_s)(x)$ is the derivative of $w_s$ at $x$ for fixed $s$; in \eqref{eq_energy} it is evaluated at $s=\varphi(x)$.
+\end{lemma}
+
+The left side of \eqref{eq_energy} is the flux through the null hypersurfaces $\{\varphi=s\}$, integrated over
+$s\in[s_1,s_2]$; in this form no measures on these hypersurfaces are needed.
+
+\begin{proof}
+Let $\varepsilon_0,a,b,\sigma_0$ be as in Lemma~\ref{lem_loc_pointwise} and $\lambda=\varepsilon_0^2\sigma^2$. Note
+$g(d\psi,d\psi)<0$, $g(d\tilde\psi,d\tilde\psi)<0$, $g(d\tilde\psi,d\psi)<0$, $g(d\varphi,d\varphi)=0$ and
+$g(d\varphi,d\psi)<0$ on $V$ (two future-directed causal vectors, one of them timelike, have negative inner product).
+
+\emph{Step 1 (integration against a cut-off).} Let $H\in C^1(\R)$ be nondecreasing with $H=0$ on $(-\infty,0]$, $H=1$ on
+$[1,\infty)$ and $0\le H'\le2$ (e.g.\ $H(r)=3r^2-2r^3$ on $[0,1]$), $H_\epsilon(r)=H(r/\epsilon)$, and for $s\in\R$
+\[
+\chi_\epsilon=H_\epsilon(\tau-\psi)\,H_\epsilon(\tilde\psi-c)\,H_\epsilon(\varphi-s).
+\]
+It is $C^1$, takes values in $[0,1]$ and vanishes outside $L\cap\{\varphi>s\}$; so $\chi_\epsilon P$ is a $C^1$ vector field
+with compact support and $\int\partial_j(\chi_\epsilon P^j)\,dx=0$. With \eqref{eq_loc_flux},
+$\int_L\chi_\epsilon\,\partial_jP^j\,dx=-A_\epsilon+B_\epsilon+G_\epsilon$, where, writing $\Phi_f=\rho e^{2\sigma\psi}T_w(df,d\psi)$,
+\begin{align*}
+A_\epsilon&=\int_LH'_\epsilon(\tau-\psi)H_\epsilon(\tilde\psi-c)H_\epsilon(\varphi-s)\,\Phi_\psi\,dx,\qquad
+B_\epsilon=\int_LH_\epsilon(\tau-\psi)H'_\epsilon(\tilde\psi-c)H_\epsilon(\varphi-s)\,\Phi_{\tilde\psi}\,dx,\\
+G_\epsilon&=\int_LH_\epsilon(\tau-\psi)H_\epsilon(\tilde\psi-c)H'_\epsilon(\varphi-s)\,\Phi_\varphi\,dx,
+\end{align*}
+with $H'_\epsilon(r)=\epsilon^{-1}H'(r/\epsilon)$. By Lemma~\ref{lem_loc_tensor}(a), $\Phi_\psi,\Phi_{\tilde\psi},\Phi_\varphi\ge0$,
+so $A_\epsilon,B_\epsilon,G_\epsilon\ge0$. Lemma~\ref{lem_loc_pointwise} with
+$N=a\sigma e^{2\sigma\psi}(|dw|^2+\sigma^2w^2)$ and $F=\frac b\sigma e^{2\sigma\psi}|\Box_gw|^2$ gives
+\begin{equation}\label{eq_loc_core}
+\int_L\chi_\epsilon N\,dx+B_\epsilon+G_\epsilon\le A_\epsilon+\int_{L\cap\{\varphi>s\}}F\,dx .
+\end{equation}
+
+\emph{Step 2 (the flux through the top).} $\Phi_\psi$ is a quadratic form in $(dw,w)$ with continuous coefficients, and $w$,
+$dw$ vanish on the compact set $\{\psi=\tau\}\cap\{\varphi\ge s\}\cap L$. Hence
+$\delta(\epsilon)=\sup\{\Phi_\psi(x):x\in L,\ \varphi(x)\ge s,\ \psi(x)\ge\tau-\epsilon\}\to0$ as $\epsilon\to0$. The integrand
+of $A_\epsilon$ vanishes outside this set, so $A_\epsilon\le2\epsilon^{-1}\delta(\epsilon)\,|L\cap\{\tau-\epsilon\le\psi\le\tau\}|$,
+and the volume of the slab is at most $C\epsilon$ because $d\psi\ne0$ on the compact set $L$. Thus $A_\epsilon\to0$. For a
+family $w_s$ as in (c), $\delta(\epsilon)\to0$ uniformly in $s\in[s_1,s_2]$, by compactness of $[s_1,s_2]\times L$.
+
+\emph{Step 3 (proof of (a) and (b)).} Drop $B_\epsilon,G_\epsilon\ge0$ in \eqref{eq_loc_core}. As $\epsilon\to0$, $\chi_\epsilon\to1$
+on $L\cap\{\varphi>s\}$ outside the level sets $\{\psi=\tau\}$ and $\{\tilde\psi=c\}$, which are Lebesgue-null since $d\psi$,
+$d\tilde\psi$ do not vanish. By dominated convergence and Step 2, $\int_{L\cap\{\varphi>s\}}N\,dx\le\int_{L\cap\{\varphi>s\}}F\,dx$,
+which is \eqref{eq_loc_energy_superlevel} with $C=b/a$. The argument used only $g(d\varphi,d\varphi)\le0$ and
+$g(d\varphi,d\psi)\le0$ (for $G_\epsilon\ge0$), so it applies to $\varphi=0$ and $s=-1$, which gives \eqref{eq_energy2}.
+
+\emph{Step 4 (proof of (c)).} Apply \eqref{eq_loc_core} to $w_s$ and drop the first two terms on the left:
+$G_\epsilon(s)\le A_\epsilon(s)+I(s)$ with $I(s)=\frac b\sigma\int_{L\cap\{\varphi>s\}}e^{2\sigma\psi}|\Box_gw_s|^2dx$. Let
+$\Phi(s,x)=\Phi_\varphi$ computed for $w_s$, a continuous function on $[s_1,s_2]\times L$. Integrating over $s\in[s_1,s_2]$ and
+using Fubini's theorem,
+\[
+\int_{s_1}^{s_2}G_\epsilon(s)\,ds=\int_LH_\epsilon(\tau-\psi)H_\epsilon(\tilde\psi-c)\Bigl(\int_{s_1}^{s_2}\epsilon^{-1}H'\bigl((\varphi(x)-s)/\epsilon\bigr)\Phi(s,x)\,ds\Bigr)dx .
+\]
+The kernel $s\mapsto\epsilon^{-1}H'((\varphi(x)-s)/\epsilon)$ is nonnegative, has integral $1$ and is supported in
+$[\varphi(x)-\epsilon,\varphi(x)]$; hence the inner integral is bounded and converges to $\Phi(\varphi(x),x)$ if
+$s_1<\varphi(x)\le s_2$ and to $0$ otherwise. With Step 2 and dominated convergence,
+\[
+\int_{L\cap\{s_1<\varphi\le s_2\}}\Phi(\varphi(x),x)\,dx\le\int_{s_1}^{s_2}I(s)\,ds .
+\]
+By Lemma~\ref{lem_loc_tensor}(b) with $\alpha=d\varphi$, $\beta=d\psi$, and since $\rho$, $-g(d\psi,d\psi)$ and
+$-g(d\varphi,d\psi)$ are bounded above and below by positive constants on $L$, there is $c_3>0$ with
+$\Phi(s,x)\ge c_3e^{2\sigma\psi(x)}\bigl(g(d\varphi,dw_s)^2+\sigma^2w_s^2\bigr)(x)$ on $L$, and $g(d\varphi,dw_s)=-Zw_s$. The
+level set $\{\varphi=s_1\}$ is null. Multiplying by $\sigma/c_3$ gives \eqref{eq_energy} with $C=b/c_3$.
+\end{proof}
+
+Let $V,V'\subset\R^{1+n}$ be open, $z'=(z'^0,\dots,z'^n)$ the standard coordinates, $\Psi\colon V\to V'$ smooth,
+$\Psi^k=z'^k\circ\Psi$, and $\kappa\in C^\infty(V)$. Define on $V$
+\begin{equation}\label{eq_bars}
+\bg^{\alpha\beta}=g(d\Psi^\alpha,d\Psi^\beta)-\kappa\,(g'^{\alpha\beta}\circ\Psi),\qquad \bth^k=-\Box_g\Psi^k+\kappa\,(\Box_{g'}z'^k)\circ\Psi,
+\end{equation}
+where $g'^{\alpha\beta}=g'(dz'^\alpha,dz'^\beta)$. Greek indices $\alpha,\beta$ and the index $k$ are coordinate indices
+running from $0$ to $n$ and are summed when repeated; the letter $a$ is reserved for the labels of wave families and is
+never summed implicitly.
+
+\begin{lemma}[Algebra of the comparison]\label{lem_comparison}
+\lean{LorentzianCalderon.box_comparison, LorentzianCalderon.cometric_comparison}
+With the notation \eqref{eq_bars}, for $v,v_1,v_2\in C^\infty(V')$,
+\begin{align}
+-\Box_g(v\circ\Psi)+\kappa\,(\Box_{g'}v)\circ\Psi&=\bg^{\alpha\beta}\,(\partial_\alpha\partial_\beta v)\circ\Psi+\bth^k\,(\partial_kv)\circ\Psi,\label{eq_alg1}\\
+g\bigl(d(v_1\circ\Psi),d(v_2\circ\Psi)\bigr)-\kappa\,g'(dv_1,dv_2)\circ\Psi&=\bg^{\alpha\beta}\,(\partial_\alpha v_1\,\partial_\beta v_2)\circ\Psi.\label{eq_alg2}
+\end{align}
+\end{lemma}
+\begin{proof}
+By the chain rule,
+$\Box_g(v\circ\Psi)=(\partial_kv)\circ\Psi\ \Box_g\Psi^k-(\partial_\alpha\partial_\beta v)\circ\Psi\ g(d\Psi^\alpha,d\Psi^\beta)$
+and $\Box_{g'}v=(\partial_kv)\Box_{g'}z'^k-(\partial_\alpha\partial_\beta v)g'^{\alpha\beta}$; this gives \eqref{eq_alg1},
+and \eqref{eq_alg2} is immediate.
+\end{proof}
+
+\begin{lemma}[Naturality under local isometries]\label{lem_loc_naturality}
+\lean{LorentzianCalderon.cometric_comp_of_pullback, LorentzianCalderon.gbar_eq_zero,
+LorentzianCalderon.box_comp_of_pullback, LorentzianCalderon.θbar_eq_zero, LorentzianCalderon.sum_d_adjugate_D}
+Let $x\in V$, let $\Psi$ be of class $C^2$ near $x$ with $\det D\Psi(x)\ne0$, and let $v,v_1,v_2$ be of class $C^2$ near
+$\Psi(x)$.
+\begin{itemize}
+\item[\textup{(a)}] If $\Psi^*g'=g$ at $x$, i.e.\ $g(x)=D\Psi(x)^{\mathsf T}g'(\Psi(x))D\Psi(x)$, then
+$g(d(v_1\circ\Psi),d(v_2\circ\Psi))(x)=g'(dv_1,dv_2)(\Psi(x))$, and $\bg(x)=0$ if $\kappa(x)=1$.
+\item[\textup{(b)}] If $\Psi^*g'=g$ on a neighbourhood of $x$, then $\Box_g(v\circ\Psi)(x)=(\Box_{g'}v)(\Psi(x))$, and
+$\bth(x)=0$ if $\kappa(x)=1$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+(a) From $g=D\Psi^{\mathsf T}(g'\circ\Psi)D\Psi$ we get $D\Psi\,g^{-1}D\Psi^{\mathsf T}=g'^{-1}\circ\Psi$ at $x$, which is
+$\bg(x)=0$ for $\kappa(x)=1$; the identity for the inner products is then \eqref{eq_alg2}.
+
+(b) Near $x$, $\det D\Psi$ has a constant sign $\epsilon$ and $|\det g|^{1/2}=|\det D\Psi|\,|\det g'|^{1/2}\circ\Psi$. With
+$W^a=|\det g'|^{1/2}g'^{ab}\partial_bv$ and $\operatorname{adj}$ the adjugate matrix, the flux of $v\circ\Psi$ is
+\[
+|\det g|^{1/2}g^{jk}\partial_k(v\circ\Psi)=\epsilon\,\operatorname{adj}(D\Psi)^j{}_a\,W^a\circ\Psi .
+\]
+By the Piola identity $\partial_j\operatorname{adj}(D\Psi)^j{}_a=0$ (valid for $\Psi$ of class $C^2$) and
+$\operatorname{adj}(D\Psi)^j{}_a\partial_j\Psi^c=\det D\Psi\,\delta^c_a$, its divergence is
+$|\det D\Psi|\,(\partial_aW^a)\circ\Psi$. Dividing by $-|\det g|^{1/2}$ gives $\Box_g(v\circ\Psi)=(\Box_{g'}v)\circ\Psi$ at $x$.
+For $v=z'^k$ and $\kappa(x)=1$ this is $\bth^k(x)=0$.
+\end{proof}
+
+\begin{lemma}[Absorption]\label{lem_loc_absorb}
+\lean{LorentzianCalderon.absorb}
+Let $\cA$ be a finite set, $e_1,\dots,e_m\in\cA$, $\sigma_0\ge1$ and $K_1,\dots,K_6\ge0$. For $\sigma\ge\sigma_0$ and $a\in\cA$
+let $G,\Theta,P_a,Q_a,R_a,T_a,M_a,W_a$ be nonnegative reals depending on $\sigma$ such that for all $\sigma\ge\sigma_0$ and
+$a\in\cA$:
+\begin{gather*}
+\sigma W_a\le K_1(G+\Theta+P_a),\qquad M_a\le K_2(W_a+G+P_a+Q_a),\qquad T_a\le K_3\Theta,\\
+R_a\le2T_a+2M_a,\qquad T_a\le2M_a+2R_a,\qquad P_{e_i}=Q_{e_i}=R_{e_i}=0\ (1\le i\le m),\\
+\Theta\le K_4\textstyle\sum_iT_{e_i},\qquad \sigma^2Q_a+\sigma^4P_a\le K_5R_a,\qquad G\le K_6\sum_{a\in\cA}Q_a .
+\end{gather*}
+Then for some $\sigma\ge\sigma_0$: $G=\Theta=0$ and $P_a=Q_a=0$ for all $a\in\cA$.
+\end{lemma}
+\begin{proof}
+For a gauge label $e_i$: $T_{e_i}\le2M_{e_i}\le2K_2(W_{e_i}+G)$ and $\sigma W_{e_i}\le K_1(G+\Theta)$, so
+$\sigma\Theta\le A\bigl(K_1(G+\Theta)+\sigma G\bigr)$ with $A=2mK_2K_4$; for $\sigma\ge2AK_1$ this gives $\Theta\le C_1G$. For any
+$a$, using $W_a\le K_1(G+\Theta+P_a)$ (as $\sigma\ge1$), $R_a\le2K_3\Theta+2K_2(W_a+G+P_a+Q_a)\le B'(G+P_a+Q_a)$ with $B'$
+depending only on the $K_i$. Then $\sigma^2(Q_a+P_a)\le\sigma^2Q_a+\sigma^4P_a\le K_5B'(G+P_a+Q_a)$, so for
+$\sigma^2\ge2K_5B'$, $Q_a+P_a\le2K_5B'\sigma^{-2}G$. Hence $G\le2K_6|\cA|K_5B'\sigma^{-2}G$, and for $\sigma$ large $G=0$; then
+$\Theta=0$ and $P_a=Q_a=0$.
+\end{proof}
+
+In the following proposition, condition (L1) consists of the pointwise conormal conditions of the form produced by
+Lemma~\ref{lem_conormal}, for $g$ and for $g'$; we write $Z_a=Z_{g,\varphi_a}$, $Z'_a=Z_{g',\varphi'_a}$, $u_{a,s}=u_a(s,\cdot)$.
+
+\begin{proposition}[Local continuation step]\label{prop_local_step}
+\lean{LorentzianCalderon.StepData.prop_local_step, LorentzianCalderon.StepData.Hyp}
+Let $n\ge2$, let $g,g'$ be smooth time-oriented Lorentzian metrics on $\R^{1+n}$, and assume:
+\begin{itemize}
+\item[\textup{(L0)}] $V,V'\subset\R^{1+n}$ are open, $\Psi\colon V\to V'$ is smooth,
+$\psi\in C^\infty(V)$ is temporal for $g$ (Definition~\ref{def_temporal}), $q_0\in V$, $\tau=\psi(q_0)$,
+$V_+=\{q\in V:\psi(q)>\tau\}$.
+\item[\textup{(L1)}] $\cA$ is finite, $\cJ\subset\R$ an open interval; for $a\in\cA$: $\varphi_a\in C^\infty(V)$,
+$\varphi'_a\in C^\infty(V')$ are eikonal of future type for $g$, $g'$ (Definition~\ref{def_eikonal}), with values in $\cJ$;
+$u_a\in C^\infty(\cJ\times V)$, $u'_a\in C^\infty(\cJ\times V')$, and there are continuous functions $a_a,b_a$ on
+$\cJ\times V$ and $a'_a,b'_a$ on $\cJ\times V'$ such that for all $s\in\cJ$
+\[
+\Box_gu_{a,s}=(\varphi_a-s)\,a_{a,s},\quad a_{a,s}=0\ \text{on}\ \{\varphi_a>s\},\quad
+2Z_au_{a,s}+(\Box_g\varphi_a)\,u_{a,s}=(\varphi_a-s)\,b_{a,s}
+\]
+on $V$, the same identities for $(g',\varphi'_a,u'_a,a'_a,b'_a)$ on $V'$, and $u_{a,s}>0$ on $\{\varphi_a=s\}$.
+\item[\textup{(L2)}] On $V_+$: $\Psi^*g'=g$, $\varphi'_a\circ\Psi=\varphi_a$ for all $a\in\cA$, and
+$u_{a,s}=u'_{a,s}\circ\Psi$ on $V_+\cap\{\varphi_a\ge s\}$ for all $a\in\cA$, $s\in\cJ$.
+\item[\textup{(L3)}] There is $I\subset\cA$ with $n+1$ elements such that $\varphi'_a\circ\Psi=\varphi_a$ on all of $V$ for
+$a\in I$, and $(d\varphi'_a(p))_{a\in I}$ is a basis of the covectors at $p$ for every $p\in V'$.
+\item[\textup{(L4)}] For every $p\in V'$ the set $\{g'(p)\}\cup\{d\varphi'_a(p)\otimes d\varphi'_a(p)\}_{a\in\cA}$ spans
+$\Sym$.
+\end{itemize}
+Then there is an open neighbourhood $V^\circ\subset V$ of $q_0$ on which $\det D\Psi\ne0$ (so $\Psi$ is a local
+diffeomorphism), $\Psi^*g'=g$, $\varphi'_a\circ\Psi=\varphi_a$ for all $a\in\cA$, and $u_{a,s}=u'_{a,s}\circ\Psi$ on
+$V^\circ\cap\{\varphi_a\ge s\}$ for all $a\in\cA$, $s\in\cJ$. Moreover every $w\in C^\infty(V^\circ)$ with $\Box_gw=0$ on
+$V^\circ$ and $w=0$ on $V^\circ\cap V_+$ vanishes identically.
+\end{proposition}
+
+The functions $a_{a,s}$, $b_{a,s}$ of \textup{(L1)} are only required to be continuous; Lemma~\ref{lem_conormal} produces
+them (smooth) from $\Box_gu_{a,s}=0$ on $\{\varphi_a\ge s\}$ and $2Z_au_{a,s}+(\Box_g\varphi_a)u_{a,s}=0$ on
+$\{\varphi_a=s\}$, and likewise for $g'$.
+
+\begin{proof}
+\emph{Step 0 (set-up).} Every point of $V\cap\{\psi=\tau\}$ is a limit of points of $V_+$, since $d\psi\ne0$; so by
+\textup{(L2)} and continuity $\Psi^*g'=g$ on $V\cap\{\psi\ge\tau\}$, and $\det D\Psi(q_0)\ne0$. Let
+\[
+\kappa=\tfrac1{n+1}\,(g'_{\alpha\beta}\circ\Psi)\,g(d\Psi^\alpha,d\Psi^\beta)\in C^\infty(V),
+\]
+so that $(g'_{\alpha\beta}\circ\Psi)\bg^{\alpha\beta}=0$ on $V$ for $\bg$ as in \eqref{eq_bars}, and $\kappa=1$ where
+$\Psi^*g'=g$. Let $\tilde\psi=\psi-|x-q_0|^2$; then $d\tilde\psi(q_0)=d\psi(q_0)$. Choose $R>0$ such that on the ball
+$B(q_0,R)\subset V$: $\det D\Psi\ne0$, $\kappa>\frac12$, and $\tilde\psi$ is temporal for $g$. For $0\le\rho<R$ the lens
+\[
+L_\rho=\{x\in B(q_0,R):\ \psi(x)\le\tau,\ \tilde\psi(x)\ge\tau-\rho^2\}
+\]
+satisfies $|x-q_0|^2=\psi-\tilde\psi\le\rho^2$, so it lies in the closed ball $\bar B(q_0,\rho)$ and is compact; Lemma~\ref{lem_energy}
+applies on $B(q_0,R)$ with $\psi,\tilde\psi,\tau$ and $c=\tau-\rho^2$. Put $r=R/2$, $L=L_r$,
+\[
+V^\circ=\{x\in B(q_0,r):\ \tilde\psi(x)>\tau-r^2\},\qquad V^\circ_-=V^\circ\cap\{\psi<\tau\}.
+\]
+$V^\circ$ is an open neighbourhood of $q_0$, $V^\circ_-$ is open, $V^\circ_-\subset L$, and $L\setminus V^\circ_-$ is
+contained in $\{\psi=\tau\}\cup\{\tilde\psi=\tau-r^2\}$ (a point of $L$ with $\psi<\tau$ and $\tilde\psi>\tau-r^2$ has
+$|x-q_0|^2<r^2$), hence is Lebesgue-null. For $\rho<r$, $L_\rho\subset V^\circ$, since $|x-q_0|\le\rho<r$ and
+$\tilde\psi\ge\tau-\rho^2>\tau-r^2$ on $L_\rho$. For $f$ continuous on $V$ write $N_\sigma(f)=\int_Le^{2\sigma\psi}f\,dx$; a
+continuous $f\ge0$ with $N_\sigma(f)=0$ vanishes on $V^\circ_-$.
+
+For $a\in\cA$ and $s\in\cJ$ put
+\[
+\bphi_a=\varphi_a-\varphi'_a\circ\Psi,\qquad \bw_{a,s}=u_{a,s}-u'_{a,s}\circ\Psi,
+\]
+smooth on $V$, resp.\ on $\cJ\times V$. By \textup{(L2)}, $\bphi_a=0$ on $V_+$ and $\bw_{a,s}=0$ on $V_+\cap\{\varphi_a\ge s\}$.
+Hence $\bphi_a$ and $d\bphi_a$ vanish on $V\cap\{\psi=\tau\}$, and $\bw_{a,s}$ and $d\bw_{a,s}$ vanish on
+$V\cap\{\psi=\tau\}\cap\{\varphi_a\ge s\}$: such a point $x$ is the limit of $x+tX(x)$, $t\downarrow0$, with $X=-\grad_g\psi$,
+and these points lie in $V_+\cap\{\varphi_a>s\}$ because $d\psi(X)=-g(d\psi,d\psi)>0$ and $d\varphi_a(X)=-g(d\varphi_a,d\psi)>0$.
+
+\emph{Step 1 (unique continuation across the top).} Let $w\in C^\infty(V^\circ)$ with $\Box_gw=0$ on $V^\circ$ and $w=0$ on
+$V^\circ\cap V_+$. On $V^\circ\cap\{\psi=\tau\}$, $w=0$ and $dw=0$, these points being limits of points of $V^\circ\cap V_+$.
+Let $x\in V^\circ$ with $\psi(x)<\tau$, and choose $\rho<r$ with $\max(\tau-\tilde\psi(x),|x-q_0|^2)<\rho^2$. Then $x$ lies in the
+open set $O_\rho=\{y\in B(q_0,\rho):\tilde\psi(y)>\tau-\rho^2,\ \psi(y)<\tau\}\subset L_\rho\subset V^\circ$. By
+\eqref{eq_energy2} on $L_\rho$ the integral $\int_{L_\rho}e^{2\sigma\psi}(|dw|^2+\sigma^2w^2)dx$ vanishes, so $w=0$ on $O_\rho$, in
+particular $w(x)=0$. Hence $w=0$ on $V^\circ$. This is the last assertion; it is also used in Step 5.
+
+\emph{Step 2 (pointwise identities).} On $V$, for $a\in\cA$ and $s\in\cJ$, with $T_a=\bth^k(\partial_k\varphi'_a)\circ\Psi$:
+\begin{align}
+\Box_g\bw_{a,s}&=(\varphi_a-s)a_{a,s}-\kappa\,(\varphi'_a\circ\Psi-s)\,a'_{a,s}\circ\Psi
++\bg^{\alpha\beta}(\partial_\alpha\partial_\beta u'_{a,s})\circ\Psi+\bth^k(\partial_ku'_{a,s})\circ\Psi,\label{eq_loc_boxw}\\
+u_{a,s}\bigl(T_a-\Box_g\bphi_a\bigr)&=2Z_a\bw_{a,s}+\kappa\,\bw_{a,s}(\Box_{g'}\varphi'_a)\circ\Psi
+-u_{a,s}\,\bg^{\alpha\beta}(\partial_\alpha\partial_\beta\varphi'_a)\circ\Psi
+-2\bg^{\alpha\beta}(\partial_\alpha\varphi'_a\,\partial_\beta u'_{a,s})\circ\Psi\notag\\
+&\quad-2g\bigl(d\bphi_a,d(u'_{a,s}\circ\Psi)\bigr)-(\varphi_a-s)b_{a,s}+\kappa\,(\varphi'_a\circ\Psi-s)\,b'_{a,s}\circ\Psi,\label{eq_loc_transport}\\
+\bg^{\alpha\beta}(\partial_\alpha\varphi'_a\,\partial_\beta\varphi'_a)\circ\Psi&=g\bigl(d\varphi_a-d\bphi_a,d\varphi_a-d\bphi_a\bigr).\label{eq_loc_null}
+\end{align}
+\eqref{eq_loc_boxw} follows from \eqref{eq_alg1} with $v=u'_{a,s}$ and \textup{(L1)}. For \eqref{eq_loc_transport}, write
+$Z_a\bw_{a,s}=Z_au_{a,s}+g(d\bphi_a,d(u'_{a,s}\circ\Psi))+g(d(\varphi'_a\circ\Psi),d(u'_{a,s}\circ\Psi))$, express the last term
+by \eqref{eq_alg2} and the transport identity of \textup{(L1)} for $g'$, $Z_au_{a,s}$ by the one for $g$, and
+$\Box_g\varphi_a=\Box_g\bphi_a+\Box_g(\varphi'_a\circ\Psi)$ by \eqref{eq_alg1} with $v=\varphi'_a$. \eqref{eq_loc_null} is
+\eqref{eq_alg2} with $v_1=v_2=\varphi'_a$ and the eikonal equation for $\varphi'_a$.
+
+\emph{Step 3 (pointwise bounds).} Write $|\bg|=\sum_{\alpha,\beta}|\bg^{\alpha\beta}|$, $|\bth|=\sum_k|\bth^k|$, and for
+$x\in V$ and $\sigma\ge1$
+\[
+W_{a,\sigma}(x)=\bigl|(Z_a\bw_{a,s})(x)\bigr|^2+\sigma^2\bw_{a,s}(x)^2\quad\text{at }s=\varphi_a(x).
+\]
+Let $s_1=\min_L\varphi_a$, $s_2=\max_L\varphi_a$; then $[s_1,s_2]\subset\cJ$. There is $C$ such that on $L$, for all $a\in\cA$:
+\begin{itemize}
+\item[\textup{(B1)}] $|\Box_g\bw_{a,s}|^2\le C(|\bg|^2+|\bth|^2+\bphi_a^2)$ for $s\in[s_1,s_2]$ with $s\le\varphi_a$. Indeed in
+\eqref{eq_loc_boxw} the first term vanishes ($a_{a,s}=0$ where $\varphi_a>s$), and $a'_{a,s}\circ\Psi\ne0$ requires
+$\varphi'_a\circ\Psi\le s\le\varphi_a$, so $|\varphi'_a\circ\Psi-s|\le|\bphi_a|$; the coefficients are bounded on the compact set
+$[s_1,s_2]\times\Psi(L)$.
+\item[\textup{(B2)}] $|T_a-\Box_g\bphi_a|^2\le C\bigl(W_{a,\sigma}+|\bg|^2+\bphi_a^2+|d\bphi_a|^2\bigr)$: take
+$s=\varphi_a(x)$ in \eqref{eq_loc_transport}, where $\varphi_a-s=0$, $\varphi'_a\circ\Psi-s=-\bphi_a$, and
+$u_{a,\varphi_a(x)}(x)\ge c_0>0$ on $L$ by \textup{(L1)} and compactness.
+\item[\textup{(B3)}] $T_a^2\le C|\bth|^2$.
+\item[\textup{(B4)}] $|\bth|^2\le C\sum_{a\in I}T_a^2$, by the basis property in \textup{(L3)} and compactness of $\Psi(L)$.
+\item[\textup{(B5)}] $|\bg|^2\le C\sum_{a\in\cA}|d\bphi_a|^2$. By \textup{(L4)}, the quadratic form
+$m\mapsto(g'_{\alpha\beta}m^{\alpha\beta})^2+\sum_a(m^{\alpha\beta}\partial_\alpha\varphi'_a\partial_\beta\varphi'_a)^2+\sum_{\alpha,\beta}(m^{\alpha\beta}-m^{\beta\alpha})^2$
+is positive definite at each point of $V'$, hence uniformly on $\Psi(L)$. Apply it to the symmetric, $g'$-trace-free $\bg$ and
+use \eqref{eq_loc_null}: $g(d\varphi_a-d\bphi_a,d\varphi_a-d\bphi_a)=-2g(d\varphi_a,d\bphi_a)+g(d\bphi_a,d\bphi_a)$ is bounded by
+$C|d\bphi_a|$ on $L$.
+\end{itemize}
+
+\emph{Step 4 (energy estimates and absorption).} By \eqref{eq_energy} on $L$ with $\varphi=\varphi_a$, the family
+$\bw_{a,s}$ (smooth on the open set $\cJ\times V\supset[s_1,s_2]\times L$, with vanishing data by Step 0) and
+$L\cap\{s_1\le\varphi_a\le s_2\}=L$, and by (B1),
+\[
+\sigma N_\sigma(W_{a,\sigma})\le C\int_{s_1}^{s_2}\int_{L\cap\{\varphi_a>s\}}e^{2\sigma\psi}|\Box_g\bw_{a,s}|^2dx\,ds
+\le K_1\bigl(N_\sigma(|\bg|^2)+N_\sigma(|\bth|^2)+N_\sigma(\bphi_a^2)\bigr).
+\]
+By \eqref{eq_energy2} applied to $\bphi_a$,
+$\sigma^2N_\sigma(|d\bphi_a|^2)+\sigma^4N_\sigma(\bphi_a^2)\le K_5N_\sigma(|\Box_g\bphi_a|^2)$. For $a\in I$, $\bphi_a=0$ on $V$.
+Together with (B2)--(B5) integrated against $e^{2\sigma\psi}$ over $L$, the numbers $G=N_\sigma(|\bg|^2)$,
+$\Theta=N_\sigma(|\bth|^2)$, $P_a=N_\sigma(\bphi_a^2)$, $Q_a=N_\sigma(|d\bphi_a|^2)$, $R_a=N_\sigma(|\Box_g\bphi_a|^2)$,
+$T_a=N_\sigma(T_a^2)$, $M_a=N_\sigma(|T_a-\Box_g\bphi_a|^2)$, $W_a=N_\sigma(W_{a,\sigma})$ satisfy the hypotheses of
+Lemma~\ref{lem_loc_absorb} with $\{e_i\}=I$, uniformly for $\sigma$ large. Hence for some $\sigma$, $G=\Theta=0$ and
+$P_a=0$, and by Step 0
+\[
+\bg=0,\qquad\bth=0,\qquad\varphi'_a\circ\Psi=\varphi_a\ (a\in\cA)\qquad\text{on }V^\circ_-.
+\]
+
+\emph{Step 5 (the conformal factor).} Let $g''=\Psi^*g'=D\Psi^{\mathsf T}(g'\circ\Psi)D\Psi$ on $B(q_0,R)$, a smooth
+nondegenerate metric. Where $\bg=0$ we have $g^{-1}=\kappa\,g''^{-1}$, since $\bg=D\Psi\,g^{-1}D\Psi^{\mathsf T}-\kappa\,g'^{-1}\circ\Psi$.
+Let
+\[
+e=|\det g|^{1/2}\,\kappa\,/\,|\det g''|^{1/2}\in C^\infty(B(q_0,R)).
+\]
+On $V^\circ_-$, $|\det g|^{1/2}g^{-1}=e\,|\det g''|^{1/2}g''^{-1}$, so with
+$F^{jk}=|\det g''|^{1/2}g''^{jl}\partial_l\Psi^k$,
+\[
+\Box_g\Psi^k=-|\det g|^{-1/2}\bigl(\partial_je\,F^{jk}+e\,\partial_jF^{jk}\bigr)=-|\det g|^{-1/2}\partial_je\,F^{jk}+\kappa\,\Box_{g''}\Psi^k .
+\]
+By Lemma~\ref{lem_loc_naturality}(b) for $g''=\Psi^*g'$, $\Box_{g''}\Psi^k=(\Box_{g'}z'^k)\circ\Psi$, so
+$\bth^k=|\det g|^{-1/2}\partial_je\,F^{jk}$. As $\bth=0$ and the matrix $(F^{jk})=|\det g''|^{1/2}g''^{-1}D\Psi^{\mathsf T}$ is
+invertible, $de=0$ on $V^\circ_-$. On $V^\circ\cap V_+$, $g''=g$ and $\kappa=1$, so $e=1$. Hence $\Box_g(e-1)=0$ on the open
+sets $V^\circ_-$ and $V^\circ\cap V_+$, and by continuity on $V^\circ\cap\{\psi=\tau\}$, whose points are limits of points of
+$V^\circ\cap V_+$. By Step 1, $e=1$ on $V^\circ$. On $V^\circ_-$, $g^{-1}=\kappa g''^{-1}$ gives
+$|\det g''|=\kappa^{n+1}|\det g|$, so $1=e^2=\kappa^{1-n}$; as $\kappa>0$ and $n\ge2$, $\kappa=1$, that is $g=g''=\Psi^*g'$. On
+$V^\circ\cap\{\psi\ge\tau\}$, $\Psi^*g'=g$ by Step 0. So $\Psi^*g'=g$ on $V^\circ$, and $\det D\Psi\ne0$ there.
+
+\emph{Step 6 (phases and amplitudes).} $\varphi'_a\circ\Psi=\varphi_a$ on $V^\circ$: on $V^\circ_-$ by Step 4, on
+$\{\psi=\tau\}$ by Step 0, on $V_+$ by \textup{(L2)}. Let $s\in\cJ$ and $x\in V^\circ$ with $s\le\varphi_a(x)$; we show
+$\bw_{a,s}(x)=0$. If $\psi(x)>\tau$ this is \textup{(L2)}, if $\psi(x)=\tau$ it is Step 0. On $V^\circ_-\cap\{\varphi_a>s\}$ we have
+$\bg=\bth=0$, $a_{a,s}=0$ and $a'_{a,s}\circ\Psi=0$ (as $\varphi'_a\circ\Psi=\varphi_a>s$), so $\Box_g\bw_{a,s}=0$ by
+\eqref{eq_loc_boxw}. Since $L\setminus V^\circ_-$ is null, \eqref{eq_loc_energy_superlevel} on $L$ with $\varphi=\varphi_a$ gives
+$\int_{L\cap\{\varphi_a>s\}}e^{2\sigma\psi}(|d\bw_{a,s}|^2+\sigma^2\bw_{a,s}^2)dx=0$, hence $\bw_{a,s}=0$ on the open set
+$V^\circ_-\cap\{\varphi_a>s\}$. If $\psi(x)<\tau$, $x$ is the limit of the points $x+tX(x)$, $t\downarrow0$, which lie in this set
+(Step 0), so $\bw_{a,s}(x)=0$ by continuity.
+\end{proof}
+
+\begin{lemma}[Second derivatives of a local isometry]\label{lem_loc_christoffel}
+\lean{LorentzianCalderon.d_D_eq_christoffel}
+Let $g_1$, $g_2$ be smooth fields of symmetric nondegenerate bilinear forms on an open set $U\subset\R^{1+n}$ and on
+$\R^{1+n}$, with Christoffel symbols $\Gamma(g)^k_{ij}=\frac12g^{kl}(\partial_ig_{jl}+\partial_jg_{il}-\partial_lg_{ij})$, and
+let $F$ be of class $C^2$ near $x\in U$ with $F^*g_2=g_1$ near $x$. Then at $x$
+\[
+\partial_i\partial_jF^k=\Gamma(g_1)^l_{ij}\,\partial_lF^k-\Gamma(g_2)^k_{pq}(F)\,\partial_iF^p\,\partial_jF^q .
+\]
+\end{lemma}
+\begin{proof}
+$DF(x)$ is invertible since $\det g_1(x)\ne0$. Differentiate $g_{1,ij}=g_{2,ab}(F)\,\partial_iF^a\,\partial_jF^b$ and form
+$\partial_ig_{1,jl}+\partial_jg_{1,il}-\partial_lg_{1,ij}$; by the symmetry of second derivatives and of $g_2$ it equals
+$2\,g_{2,ab}(F)\,\partial_lF^b\bigl(\partial_i\partial_jF^a+\Gamma(g_2)^a_{pq}(F)\partial_iF^p\partial_jF^q\bigr)$. Multiplying by
+$\frac12g_1^{-1}$ and using $g_1^{-1}=DF^{-1}g_2(F)^{-1}DF^{-\mathsf T}$ gives the formula.
+\end{proof}
+
+\begin{lemma}[Rigidity of local isometries]\label{lem_rigidity}
+\lean{LorentzianCalderon.eqOn_of_pullback_eq}
+Let $U\subset\R^{1+n}$ be a connected open set, $g_1$ a smooth field of nondegenerate bilinear forms on $U$, $g_2$ a smooth
+field of symmetric nondegenerate bilinear forms on $\R^{1+n}$ (for instance Lorentzian metrics), and
+$F,\tilde F\colon U\to\R^{1+n}$ smooth maps with $F^*g_2=\tilde F^*g_2=g_1$. If $F=\tilde F$ on a nonempty open subset of $U$,
+then $F=\tilde F$ on $U$.
+\end{lemma}
+\begin{proof}
+The set $S=\{q\in U:F(q)=\tilde F(q),\ DF(q)=D\tilde F(q)\}$ is closed in $U$ and nonempty. It is open: let $x_0\in S$ and
+$B(x_0,r)\subset U$. For $x\in B(x_0,r)$ and $v=x-x_0$, on the interval $\{t:x_0+tv\in B(x_0,r)\}\ni0,1$, by
+Lemma~\ref{lem_loc_christoffel} both $t\mapsto(F(x_0+tv),DF(x_0+tv))$ and the same for $\tilde F$ solve the first-order system
+\[
+\dot y^k=v^iM^k{}_i,\qquad \dot M^k{}_j=v^i\bigl(\Gamma(g_1)^l_{ij}(x_0+tv)\,M^k{}_l-\Gamma(g_2)^k_{pq}(y)\,M^p{}_iM^q{}_j\bigr),
+\]
+whose right-hand side is $C^1$, hence locally Lipschitz. They agree at $t=0$, so by uniqueness of solutions (and
+connectedness of the interval) they agree at $t=1$: $F(x)=\tilde F(x)$. Thus $F=\tilde F$ on $B(x_0,r)$, hence also
+$DF=D\tilde F$ there, and $B(x_0,r)\subset S$. As $U$ is connected, $S=U$.
+\end{proof}
+\section{The induction}\label{induction}
+
+In this section the standing assumptions \textup{(A1)}--\textup{(A3)} of Definition~\ref{def_setting} hold, with the
+notation introduced there. $\psi$ is a fixed Cauchy temporal function of $g$ with its flow $\Phi$, so that
+$\psi(\Phi_r(x))=\psi(x)+r$ (Fact~\ref{fact_cauchy_temporal}), and $A_\tau=\{\psi>\tau\}$, $\Sigma_\tau=\{\psi=\tau\}$.
+Each $A_\tau$ is open and a future set for $g$; it is connected, being the image of the connected set
+$(\tau,\infty)\times\R^{1+n}$ under $(t,x)\mapsto\Phi_{t-\psi(x)}(x)$; and $A_\tau\setminus W$ is nonempty, since it
+contains $\Phi_r(0)$ for large $r$. Since $d\psi\ne0$, every point of $\Sigma_\tau$ lies in the closure of $A_\tau$. By
+Lemma~\ref{lem_solution_coords} (for $\sg=g'$ and $K=W$) we fix $v'_1,\dots,v'_m$ with $\Box_{g'}v'_i=0$ and an open
+$N'\supset W$ such that $\mathbf v'=(v'_1,\dots,v'_m)\colon N'\to\R^m$ is an immersion, and put
+$\mathbf v=(\sT v'_1,\dots,\sT v'_m)\in C^\infty(\R^{1+n};\R^m)$ (Lemma~\ref{lem_transfer}); thus $\mathbf v=\mathbf v'$ on $O$.
+
+Sources and their retarded solutions are those of~\ref{conv_sources} and Lemma~\ref{lem_green_distributions}:
+for a source $F$ supported in a compact set $K$, $G^\ret_gF$ is the functional $h\mapsto F(G^\adv_gh)$ on
+$C_c^\infty(\R^{1+n})$. It \emph{agrees} with a locally integrable function $u$ on an open set $N$ if
+$G^\ret_gF(h)=\int uh\,dV_g$ for all $h\in C_c^\infty(N)$, and it \emph{vanishes} on $N$ if it agrees with $0$ there.
+$G^\ret_gF$ vanishes on $\R^{1+n}\setminus J^+_g(K)$, and $G^\ret_gF(\Box_gP)=F(P)$ for $P\in C_c^\infty(\R^{1+n})$
+(Lemma~\ref{lem_green_distributions}).
+
+\begin{definition}[Extension property]\label{def_extension}
+\lean{LorentzianCalderon.ExtensionProperty}
+For $\tau\in\R$, $\sP(\tau)$ is the statement: there is a smooth map $\Psi_\tau\colon A_\tau\to \R^{1+n}$ with $\Psi_\tau^*g'=g$ on
+$A_\tau$ and $\Psi_\tau=\id$ on $A_\tau\setminus W$.
+\end{definition}
+
+\begin{lemma}[Uniqueness of the extension]\label{lem_extension_unique}
+\lean{LorentzianCalderon.ExtensionProperty.eqOn, LorentzianCalderon.ExtensionProperty.mono}
+If $\sP(\tau)$ holds (Definition~\ref{def_extension}), then $\Psi_\tau$ is unique, and $\Psi_\tau|_{A_{\tau_1}}=\Psi_{\tau_1}$
+for $\tau_1>\tau$.
+\end{lemma}
+\begin{proof}
+Two maps with the properties of $\sP(\tau)$ agree with the identity on the nonempty open set $A_\tau\setminus W$ of the
+connected open set $A_\tau$, so they agree by Lemma~\ref{lem_rigidity}. The restriction of $\Psi_\tau$ to $A_{\tau_1}$ has
+the properties of $\sP(\tau_1)$.
+\end{proof}
+
+\begin{lemma}[No escape]\label{lem_no_escape}
+\lean{LorentzianCalderon.ExtensionProperty.isFutureTimelike_fderiv, LorentzianCalderon.ExtensionProperty.mapsTo_W, LorentzianCalderon.ExtensionProperty.isFutureTimelike_fderiv_of_admissible, LorentzianCalderon.ExtensionProperty.mapsTo_W_of_admissible}
+If $\sP(\tau)$ holds (Definition~\ref{def_extension}), then $\Psi_\tau$ preserves the time orientation and
+$\Psi_\tau(A_\tau\cap W)\subset W$.
+\end{lemma}
+\begin{proof}
+Write $\Psi=\Psi_\tau$. Let $Y,Y'$ be future-directed timelike vector fields for $g,g'$. The function
+$g'(d\Psi(Y),Y'\circ\Psi)$ on $A_\tau$ is continuous, nowhere zero (as $d\Psi(Y)$ is $g'$-timelike), and negative on
+$A_\tau\setminus W$, where $d\Psi=\id$ and the time orientations of $g$ and $g'$ agree; as $A_\tau$ is connected it is
+negative everywhere. Hence $d\Psi$ maps future-directed timelike vectors to future-directed timelike vectors, and a vector
+$w$ at $x\in A_\tau$ is future-directed $g$-timelike if $d\Psi(x)w$ is future-directed $g'$-timelike.
+
+Let $q\in A_\tau\cap W$ and suppose $x=\Psi(q)\notin W$. By Lemma~\ref{lem_escape} there is a future-inextendible
+$g'$-timelike curve $c'\colon[0,\infty)\to O$ with $c'(0)=x$ which leaves every compact set for good. For $s\ge0$, a \emph{lift on $[0,s]$} is a continuous
+$c\colon[0,s]\to A_\tau$ with $c(0)=q$ and $\Psi\circ c=c'$ on $[0,s]$.
+
+\emph{(i) Properties of lifts.} Locally $c=L\circ c'$ for local inverses $L$ of $\Psi$ (inverse function theorem), so a
+lift is a future-directed $g$-timelike curve by the first part, and $\psi(c(t))\ge\psi(q)$. Where $c(t)\notin W$ we have
+$c(t)=\Psi(c(t))=c'(t)$. Hence a lift on $[0,s]$, $s\le b$, takes values in the compact set
+$K_b=(W\cup c'([0,b]))\cap\{\psi\ge\psi(q)\}\subset A_\tau$.
+
+\emph{(ii) Lifts exist on every $[0,b]$.} Let $s_1$ be the supremum of the $s\in[0,b]$ for which there is a lift on
+$[0,s]$, and let $c_k$ be lifts on $[0,u_k]$ with $u_k\to s_1$. By (i), a subsequence of $c_k(u_k)$ converges to some
+$p\in K_b\subset A_\tau$, and $\Psi(p)=c'(s_1)$. Let $L$ be a local inverse of $\Psi$ from a neighbourhood of $c'(s_1)$
+onto a neighbourhood of $p$, and $\epsilon>0$ such that $c'(t)$ lies in its domain for $|t-s_1|<\epsilon$. For $k$ large,
+$c_k(u_k)$ lies in its image and $|u_k-s_1|<\epsilon$; then $c_k$ on $[0,u_k]$ followed by $L\circ c'$ is a lift on
+$[0,\min(b,s_1+\epsilon/2)]$. Hence $s_1=b$ and the lift exists on $[0,b]$.
+
+\emph{(iii) Lifts end in $W$.} Let $c$ be a lift on $[0,s]$ and $S=\{t\in[0,s]:c(t)\in W\}$, a closed set containing
+$0$. If $t\in S$, $t<s$, and points $t'\downarrow t$ with $c(t')\notin W$ existed, then $c(t')=c'(t')$ and by continuity
+$c(t)=c'(t)\in O$, a contradiction. So $S$ contains a right neighbourhood of each of its points $t<s$, and $S=[0,s]$.
+
+By (ii) and (iii), $c'(s)=\Psi(c(s))\in\Psi(W\cap\{\psi\ge\psi(q)\})$ for every $s\ge0$. This set is compact, since
+$\Psi$ is continuous on $A_\tau\supset\{\psi\ge\psi(q)\}$; this contradicts the choice of $c'$.
+\end{proof}
+
+\begin{lemma}[Vanishing of solutions which vanish outside $W$]\label{lem_ind_vanishing}
+\lean{LorentzianCalderon.eqOn_zero_of_box_eq_zero}
+Let $\tau\in\R$ and $z\in C^\infty(A_\tau)$ with $\Box_gz=0$ on $A_\tau$ and $z=0$ on $A_\tau\setminus W$. Then $z=0$.
+\end{lemma}
+\begin{proof}
+Let $\vartheta\in C_c^\infty(A_\tau)$ and $\chi=G^\ret_g\vartheta$ (Lemma~\ref{lem_green_operators}); then
+$\supp\chi\subset J^+_g(\supp\vartheta)\subset A_\tau$, and $K'=J^+_g(\supp\vartheta)\cap J^-_g(W)$ is a compact subset of
+$A_\tau$ (Fact~\ref{fact_causal_topology}). Choose $\zeta\in C_c^\infty(A_\tau)$ with $\zeta=1$ near $K'\cup\supp\vartheta$.
+Then $z\,\Box_g(\zeta\chi)=z\vartheta$ on $A_\tau$: outside $W$ both sides vanish; at points of $W\cap J^+_g(\supp\vartheta)
+\subset K'$ we have $\Box_g(\zeta\chi)=\Box_g\chi=\vartheta$; at points of $W$ outside the closed set
+$J^+_g(\supp\vartheta)$ (Lemma~\ref{lem_green_closed}), $\chi$ vanishes nearby and $\vartheta=0$. As $\zeta\chi$ has compact
+support in $A_\tau$, Green's identity gives
+$\int z\vartheta\,dV_g=\int z\,\Box_g(\zeta\chi)\,dV_g=\int(\Box_gz)\,\zeta\chi\,dV_g=0$. Hence $z=0$.
+\end{proof}
+
+\begin{lemma}[Propagation of identities]\label{lem_propagation}
+\lean{LorentzianCalderon.ExtensionProperty.retarded_eq_comp, LorentzianCalderon.ExtensionProperty.agreesOn_retardedS_comp, LorentzianCalderon.ExtensionProperty.vanishesOn_retardedS, LorentzianCalderon.ExtensionProperty.transfer_eq_comp}
+Assume $\sP(\tau)$ (Definition~\ref{def_extension}) and write $\Psi=\Psi_\tau$.
+\begin{itemize}
+\item[\textup{(a)}] For $f\in C_c^\infty(\R^{1+n})$ with $\supp f\subset O$: $G^\ret_gf=(G^\ret_{g'}f)\circ\Psi$ on $A_\tau$.
+Let $F$ be a source supported in a compact subset of $O$, $N$ open and $u'$ locally integrable on $N$. If
+$G^\ret_{g'}F$ agrees with $u'$ on $N$, then $G^\ret_gF$ agrees with $u'\circ\Psi$ on $A_\tau\cap\Psi^{-1}(N)$. In
+particular, if $G^\ret_{g'}F$ vanishes on $N$, then $G^\ret_gF$ vanishes on $A_\tau\cap\Psi^{-1}(N)$.
+\item[\textup{(b)}] For every $v'\in C^\infty(\R^{1+n})$ with $\Box_{g'}v'=0$: $\sT v'=v'\circ\Psi$ on $A_\tau$ (with $\sT$
+as in Lemma~\ref{lem_transfer}). In particular $\mathbf v=\mathbf v'\circ\Psi$ on $A_\tau$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+Since $\Psi^*g'=g$ on $A_\tau$, $\Box_g(w\circ\Psi)=(\Box_{g'}w)\circ\Psi$ there for smooth $w$.
+
+(b) $z=\sT v'-v'\circ\Psi\in C^\infty(A_\tau)$ satisfies $\Box_gz=0$ on $A_\tau$ and $z=0$ on $A_\tau\setminus W$, where
+$\Psi=\id$ and $\sT v'=v'$. By Lemma~\ref{lem_ind_vanishing}, $z=0$.
+
+(a), smooth sources. We have $f\circ\Psi=f$ on $A_\tau$: outside $W$ because $\Psi=\id$ there, and on $A_\tau\cap W$
+because both sides vanish there, by Lemma~\ref{lem_no_escape}. Hence $z=G^\ret_gf-(G^\ret_{g'}f)\circ\Psi$ satisfies
+$\Box_gz=f-f\circ\Psi=0$ on $A_\tau$. On $A_\tau\setminus W$, $\Psi=\id$ and $z=G^\ret_gf-G^\ret_{g'}f=0$ by
+Lemma~\ref{lem_data}, as $\supp f\subset O\subset O_0$. By Lemma~\ref{lem_ind_vanishing}, $z=0$.
+
+(a), sources. \emph{Step 1 (local inverses).} $d\Psi$ is invertible on $A_\tau$, so each $x_0\in A_\tau\cap\Psi^{-1}(N)$
+has an open neighbourhood $V\subset A_\tau$ which $\Psi$ maps diffeomorphically onto an open subset of $N$. For
+$\vartheta\in C_c^\infty(V)$ let $\tilde\vartheta=\vartheta\circ(\Psi|_V)^{-1}$, extended by zero, an element of
+$C_c^\infty(\Psi(V))$. Since $|\det g|^{1/2}=|\det d\Psi|\,|\det g'|^{1/2}\circ\Psi$ on $A_\tau$, the change of variables
+formula gives $\int u\,\tilde\vartheta\,dV_{g'}=\int(u\circ\Psi)\,\vartheta\,dV_g$ for every function $u$ for which
+either side is defined.
+
+\emph{Step 2 ($G^\adv_g\vartheta=G^\adv_{g'}\tilde\vartheta$ on $O$).} Let $h\in C_c^\infty(O)$. On $O$ both volume
+densities equal $dx$. By the duality of the Green operators (Lemma~\ref{lem_green_duality}), the smooth case and Step 1,
+\[
+\int h\,G^\adv_g\vartheta\,dx=\int(G^\ret_gh)\,\vartheta\,dV_g=\int(G^\ret_{g'}h)\circ\Psi\ \vartheta\,dV_g
+=\int(G^\ret_{g'}h)\,\tilde\vartheta\,dV_{g'}=\int h\,G^\adv_{g'}\tilde\vartheta\,dx .
+\]
+Both functions are continuous, so they agree on $O$.
+
+\emph{Step 3 (agreement on $V$).} As $F$ only sees a neighbourhood of its support, which lies in $O$, Step 2 gives
+$G^\ret_gF(\vartheta)=F(G^\adv_g\vartheta)=F(G^\adv_{g'}\tilde\vartheta)=G^\ret_{g'}F(\tilde\vartheta)
+=\int u'\tilde\vartheta\,dV_{g'}=\int(u'\circ\Psi)\vartheta\,dV_g$, by Step 1.
+
+\emph{Step 4 (locality).} $u'\circ\Psi$ is locally integrable on $A_\tau\cap\Psi^{-1}(N)$, by the change of variables on
+compact subsets of the sets $V$. For $h\in C_c^\infty(A_\tau\cap\Psi^{-1}(N))$ cover $\supp h$ by finitely many sets $V$ of
+Step 1, and let $(\rho_i)$ be a smooth partition of unity on $\supp h$ subordinate to this cover. Then $h=\sum_i\rho_ih$
+with $\rho_ih\in C_c^\infty(V_i)$, and by the additivity of $F$ and Step 3,
+$G^\ret_gF(h)=\sum_iG^\ret_gF(\rho_ih)=\sum_i\int(u'\circ\Psi)\rho_ih\,dV_g=\int(u'\circ\Psi)h\,dV_g$.
+\end{proof}
+
+\begin{lemma}[Transfer along a null geodesic]\label{lem_ind_null_transfer}
+\lean{LorentzianCalderon.ExtensionProperty.causalLE_of_null}
+Assume $\sP(\tau)$ (Definition~\ref{def_extension}). Let $\sigma_0\colon[0,1]\to\R^{1+n}$ be a future-directed $g$-null
+geodesic with $z=\sigma_0(0)\in O$ and $\sigma_0(1)\notin I^+_g(z)$. If $a\in(0,1)$ and $\sigma_0(a)\in A_\tau$, then
+$z\le_{g'}\Psi_\tau(\sigma_0(a))$.
+\end{lemma}
+\begin{proof}
+Write $\Psi=\Psi_\tau$, $b=1/a>1$ and $\sigma(t)=\sigma_0(at)$, $t\in[0,b]$, a future-directed $g$-null geodesic with
+$\sigma(0)=z$, $\sigma(1)=\sigma_0(a)$ and $\sigma(b)=\sigma_0(1)\notin I^+_g(\sigma(0))$. Choose $t_s\in(0,1)$ with
+$\sigma([0,t_s])\subset O$, put $t_1=t_s/2$, $t_2=(1+b)/2$, and let $\mu(s)=z+s\,\partial_t$ for small $|s|$, a
+future-directed timelike curve in $O$, where $g=\gM$. Let $\eta$, $\cT$, $\varphi$ be given by
+Lemma~\ref{lem_emission} for $\sg=g$, $\sigma$, $\mu$ and $[t_1,t_2]$. By Lemma~\ref{lem_emission}(iii) for $t=t_s$ and
+the neighbourhood $O$ of $\sigma([0,t_s])$ there is a neighbourhood $\cC_1$ of $\sigma(t_s)$ such that every
+$x\in\cC_1\cap\cT$ with $\varphi(x)=0$ is the endpoint of a $g$-null geodesic segment from $z$ contained in $O$. Let
+$\theta$, $V$, $u$ and the source $F_0$ be given by Lemma~\ref{lem_onesided} for $\sg=g$, $t_*=t_s$ and
+$\cN_*=\inte\cC_1\cap O$; $F_0$ is supported in $K=\supp\theta\cap\{\varphi=0\}\subset\cC_1\cap\cT\cap O$. A $g$-causal
+curve in $O$ is $g'$-causal, since $g=g'$ on $O$ with the same time orientation; hence $K\subset J^+_{g'}(z)$.
+
+$G^\ret_gF_0$ agrees with $u_0H(\varphi)$ on the neighbourhood $V$ of $\sigma(1)$, where $\varphi(\sigma(1))=0$,
+$d\varphi\ne0$ and $u_0(\sigma(1))>0$. Hence $G^\ret_gF_0$ vanishes on no neighbourhood of $\sigma(1)$: every
+neighbourhood contains a nonempty open set on which $\varphi>0$ and $u_0>0$, and a nonnegative nonzero test function
+supported there has positive pairing. Suppose $\Psi(\sigma(1))\notin J^+_{g'}(K)$. This set is closed
+(Lemma~\ref{lem_green_closed}), and $G^\ret_{g'}F_0$ vanishes on its complement $N$ (Lemma~\ref{lem_green_distributions}).
+By Lemma~\ref{lem_propagation}(a), $G^\ret_gF_0$ vanishes on the neighbourhood $A_\tau\cap\Psi^{-1}(N)$ of $\sigma(1)$, a
+contradiction. So $\Psi(\sigma_0(a))\in J^+_{g'}(K)\subset J^+_{g'}(z)$.
+\end{proof}
+
+\begin{lemma}[Transfer of causal relations]\label{lem_causal_transfer}
+\lean{LorentzianCalderon.ExtensionProperty.causalLE_transfer}
+Assume $\sP(\tau)$ (Definition~\ref{def_extension}). If $x\in A_\tau$, $y\in O$ and $y\le_gx$, then
+$y\le_{g'}\Psi_\tau(x)$.
+\end{lemma}
+\begin{proof}
+Write $\Psi=\Psi_\tau$. Let $c\colon[0,\infty)\to O$ be the future-inextendible curve of Lemma~\ref{lem_escape} with
+$c(0)=y$; it is timelike for $g$ and for $g'$, so $y\le_gc(t)$ and $y\le_{g'}c(t)$ for all $t$. The set
+$S=\{t\ge0:c(t)\le_gx\}$ is closed (Fact~\ref{fact_causal_topology}) and contains $0$. It is bounded: for $t\in S$, $c(t)$
+lies in the compact set $J^+_g(y)\cap J^-_g(x)$, which $c$ leaves for good (Lemma~\ref{lem_escape}). Let $t^*=\max S$
+and $z=c(t^*)\in O$. Then $y\le_{g'}z$, and it suffices to show $z\le_{g'}\Psi(x)$. Moreover $z\notin I^-_g(x)$: this set
+is open (Fact~\ref{fact_causal_topology}), so $z\in I^-_g(x)$ would give $c(t)\le_gx$ for some $t>t^*$.
+
+If $z=x$, then $x\in A_\tau\cap O$, $\Psi(x)=x$, and we are done. Otherwise $z\le_gx$, $z\ne x$ and $x\notin I^+_g(z)$, so
+by Fact~\ref{fact_maximizer} there is a future-directed $g$-null geodesic $\sigma_0\colon[0,1]\to\R^{1+n}$ from $z$ to $x$,
+and $\sigma_0(1)=x\notin I^+_g(z)$. For $a<1$ close to $1$, $\sigma_0(a)\in A_\tau$, and
+Lemma~\ref{lem_ind_null_transfer} gives $\Psi(\sigma_0(a))\in J^+_{g'}(z)$. Letting $a\to1$, by the continuity of $\Psi$ at
+$x$ and the closedness of $J^+_{g'}(z)$ (Fact~\ref{fact_causal_topology}), $z\le_{g'}\Psi(x)$.
+\end{proof}
+
+\begin{lemma}[Behaviour at the frontier]\label{lem_frontier}
+\lean{LorentzianCalderon.ExtensionProperty.frontier, LorentzianCalderon.ExtensionProperty.frontier_tendsto, LorentzianCalderon.ExtensionProperty.frontier_eq, LorentzianCalderon.ExtensionProperty.frontier_extension}
+Assume $\sP(\tau)$ (Definition~\ref{def_extension}) and let $q_0\in\Sigma_\tau\cap W$. Then:
+\begin{itemize}
+\item[\textup{(a)}] there is $p_0\in W$ with $\Psi_\tau(q)\to p_0$ as $q\to q_0$, $q\in A_\tau$; and
+$\mathbf v'(p_0)=\mathbf v(q_0)$;
+\item[\textup{(b)}] if $q_0\in\partial W$, then $p_0=q_0$;
+\item[\textup{(c)}] there are an open neighbourhood $B$ of $q_0$ and $\hat\Psi\in C^\infty(B;\R^{1+n})$ with $\hat\Psi=\Psi_\tau$
+on $B\cap A_\tau$ and $\hat\Psi(q_0)=p_0$; moreover $g'(d\hat\Psi\,\cdot,d\hat\Psi\,\cdot)=g$ on $B\cap\{\psi\ge\tau\}$,
+and $d\hat\Psi(q_0)$ is invertible.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+Write $\Psi=\Psi_\tau$, and let ``eventually'' refer to $q\to q_0$, $q\in A_\tau$ (this filter is proper, as
+$q_0\in\overline{A_\tau}$).
+
+(a) \emph{Connected neighbourhoods.} Let $e$ be a vector with $d\psi(q_0)e=1$. Small cylinders around $q_0$ along $e$
+(products of a small ball in a hyperplane transversal to $e$ with an interval in the direction $e$, on which
+$d\psi(e)>0$) form a neighbourhood basis $B$ of $q_0$ for which $B\cap A_\tau$ is connected and nonempty: along each
+segment in the direction $e$, $\psi$ is increasing.
+
+\emph{Cluster points.} By Lemma~\ref{lem_no_escape}, and $\Psi(q)=q$ for $q\notin W$, for every neighbourhood $N$ of $q_0$
+eventually $\Psi(q)\in W\cup N$. So eventually $\Psi(q)$ lies in the compact set $W\cup\overline{B(q_0,1)}$, and $\Psi$
+has cluster points at $q_0$. Every cluster point $p$ lies in $W$ (otherwise separate $p$ from $q_0$ by disjoint open sets
+$N_1\ni p$, $N\ni q_0$ with $N_1\cap W=\emptyset$; frequently $\Psi(q)\in N_1$, contradicting $\Psi(q)\in W\cup N$
+eventually), and $\mathbf v'(p)=\mathbf v(q_0)$, because $\mathbf v'(\Psi(q))=\mathbf v(q)$ on $A_\tau$
+(Lemma~\ref{lem_propagation}(b)) and $\mathbf v,\mathbf v'$ are continuous.
+
+\emph{Convergence.} Let $p_0$ be a cluster point. As $d\mathbf v'(p_0)$ is injective, $\mathbf v'$ has a smooth left inverse
+near $p_0$, so it is injective on a neighbourhood $U$ of $p_0$; choose an open $O_1\ni p_0$ with
+$\overline{O_1}\subset U$. Then $p_0$ is the only cluster point in $\overline{O_1}$, by the injectivity and the previous
+step. Eventually $\Psi(q)\in O_1\cup(\R^{1+n}\setminus\overline{O_1})$: otherwise there would be a cluster point in the
+compact set $\overline{O_1}\setminus O_1$. So there is a neighbourhood $B$ of $q_0$ from the basis above with
+$\Psi(B\cap A_\tau)\subset O_1\cup(\R^{1+n}\setminus\overline{O_1})$. The set $\Psi(B\cap A_\tau)$ is connected and meets
+$O_1$ (as $p_0$ is a cluster point), so it is contained in $O_1$. Hence all cluster points lie in $\overline{O_1}$ and equal
+$p_0$; by compactness, $\Psi(q)\to p_0$.
+
+(b) Let $q_0\in\partial W$. There is a vector $v$ with $v^0=1$, timelike for $\gM$ (with spatial part $\frac34$ of a unit
+vector in the direction of the spatial part of $q_0$, or of any unit vector if it vanishes), such that $q_0+sv\in O$ for all
+$s>0$. On $O$, $v$ is future-directed timelike for $g=\gM$, so $\psi(q_0+sv)>\psi(q_0)=\tau$ for $s>0$. Hence
+$q_0+sv\in A_\tau\setminus W$, $\Psi(q_0+sv)=q_0+sv$, and $p_0=\lim_{s\downarrow0}\Psi(q_0+sv)=q_0$.
+
+(c) Since $\mathbf v'$ is an immersion at $p_0\in W$, there are an open neighbourhood $U$ of $p_0$, an open set
+$\cN\subset\R^m$ with $\mathbf v'(U)\subset\cN$, and a smooth $\varpi\colon\cN\to\R^{1+n}$ with $\varpi\circ\mathbf v'=\id$
+on $U$ (a left inverse of $d\mathbf v'(p_0)$ composed with the inverse function theorem). By (a) there is an open
+neighbourhood $B_0$ of $q_0$ with $\Psi(B_0\cap A_\tau)\subset U$; put $B=B_0\cap\mathbf v^{-1}(\cN)$, which contains $q_0$
+since $\mathbf v(q_0)=\mathbf v'(p_0)\in\cN$, and $\hat\Psi=\varpi\circ\mathbf v$ on $B$. For $q\in B\cap A_\tau$,
+$\hat\Psi(q)=\varpi(\mathbf v'(\Psi(q)))=\Psi(q)$ by Lemma~\ref{lem_propagation}(b), and
+$\hat\Psi(q_0)=\varpi(\mathbf v'(p_0))=p_0$. The identity $g'(d\hat\Psi\,\cdot,d\hat\Psi\,\cdot)=g$ holds on the open set
+$B\cap A_\tau$, whose closure in $B$ contains $B\cap\{\psi\ge\tau\}$; by continuity it holds there. In particular
+$d\hat\Psi(q_0)$ is injective, hence invertible.
+\end{proof}
+
+\begin{lemma}[The phase near a frontier point]\label{lem_ind_phase}
+\lean{LorentzianCalderon.exists_isFutureEikonal_extension}
+Let $q_0\in\Sigma_\tau$, $B$ an open neighbourhood of $q_0$ and $\varphi^\natural\in C^\infty(B)$ with
+$g(d\varphi^\natural,d\varphi^\natural)=0$ on $B\cap\{\psi\ge\tau\}$ and $-\grad_g\varphi^\natural(q_0)$ future-directed
+causal. Then there are an open neighbourhood $U\subset B$ of $q_0$ and a function $\varphi$ which is eikonal of future type
+for $g$ on $U$ (Definition~\ref{def_eikonal}) with $\varphi=\varphi^\natural$ on $U\cap\{\psi\ge\tau\}$.
+\end{lemma}
+\begin{proof}
+This is the solution of the eikonal equation by the method of characteristics (for the corresponding statements in $\R^n$
+see \cite[Appendix~5.I]{Rauch}, in particular the Covering Lemma~5.I.3, the Main Theorem~5.I.4 and the Tangency
+Lemma~5.I.5). Let $\mathsf H(x,\xi)=\frac12g_x^{-1}(\xi,\xi)$ on $\R^{1+n}\times(\R^{1+n})^*$, $\Phi^{\mathsf H}_r$ its
+Hamilton flow (Fact~\ref{fact_ode}), and $\pi(x,\xi)=x$; then $\partial_\xi\mathsf H(x,\xi)=g_x^{-1}\xi$, and $\mathsf H$
+is constant along the flow.
+
+\emph{Initial data.} Let $\gamma=\grad_g\varphi^\natural(q_0)$; then $d\psi(\gamma)<0$, as $\psi$ is temporal and $-\gamma$
+future-directed causal. Put $\ell=d\psi(q_0)$ and $e=\gamma/\ell(\gamma)$. The map
+$\Xi(x)=x+(\psi(x)-\tau-\ell(x-q_0))\,e$ has $d\Xi(q_0)=\id$ and $\ell(\Xi(x)-q_0)=\psi(x)-\tau$; with a local inverse of
+$\Xi$ near $q_0$ and $P(y)=y-\ell(y-q_0)\,e$, the map $\bar x=\Xi^{-1}\circ P$, defined near $q_0$, takes values in
+$\Sigma_\tau$, with $\bar x(q_0)=q_0$ and $d\bar x(q_0)=\id-\ell(\cdot)\,e$. Let
+$\Gamma(r,y)=\Phi^{\mathsf H}_r(\bar x(y),d\varphi^\natural(\bar x(y)))$, $r(y)=\ell(y-q_0)/\ell(\gamma)$ and
+$\mathfrak F(y)=\pi\Gamma(r(y),y)$, all smooth near $(0,q_0)$ and $q_0$.
+
+\emph{The characteristic identity.} $\mathsf H\circ\Gamma=0$, since $\mathsf H$ vanishes at $r=0$ because
+$\bar x(y)\in\Sigma_\tau$. Write $\Gamma=(x,\xi)$. For a vector $w$, the $r$-derivative of $\xi(\partial_yx\,w)$ is
+$\partial_y(\mathsf H\circ\Gamma)\,w=0$, as $\mathsf H$ is quadratic in $\xi$; so
+$\xi(\Gamma(r,y))(\partial_yx(r,y)w)=d(\varphi^\natural\circ\bar x)(y)w$. In $d\mathfrak F(y)w$ the term coming from
+$r(y)$ is a multiple of $\partial_\xi\mathsf H=g^{-1}\xi$, which $\xi$ annihilates since $\mathsf H=0$. Hence
+$\xi(\Gamma(r(y),y))\bigl(d\mathfrak F(y)w\bigr)=d(\varphi^\natural\circ\bar x)(y)w$. At $q_0$, $r=0$ and
+$d\mathfrak F(q_0)w=\ell(w)\gamma/\ell(\gamma)+w-\ell(w)e=w$.
+
+\emph{The phase.} So $\mathfrak F$ maps a neighbourhood of $q_0$ diffeomorphically onto a neighbourhood $U_1$ of $q_0$;
+put $\varphi=\varphi^\natural\circ\bar x\circ\mathfrak F^{-1}$ on $U_1$. By the characteristic identity,
+$d\varphi(\mathfrak F(y))=\xi(\Gamma(r(y),y))$, so $g(d\varphi,d\varphi)=2\mathsf H\circ\Gamma=0$, and
+$\grad_g\varphi(q_0)=\gamma$. After shrinking, $d\varphi\ne0$ and $-\grad_g\varphi$ is future-directed on $U_1$, by
+continuity.
+
+\emph{Agreement on $\{\psi\ge\tau\}$.} Near $(0,q_0)$, $\psi$ decreases along the characteristics, since
+$d\psi(g^{-1}\xi)<0$ at $(q_0,d\varphi^\natural(q_0))$. Let $x=\mathfrak F(y)$ with $\psi(x)\ge\tau$; then $r(y)\le0$.
+Since $\mathsf H(x,d\varphi^\natural(x))$ vanishes on $B\cap\{\psi\ge\tau\}$, its differential vanishes there (on the
+boundary by continuity from $B\cap A_\tau$); hence along an integral curve $c$ of $\grad_g\varphi^\natural$ in
+$B\cap\{\psi\ge\tau\}$ the pair $(c,d\varphi^\natural(c))$ solves Hamilton's equations. The integral curve of
+$\grad_g\varphi^\natural$ from $\bar x(y)$, run over $[r(y),0]$, stays in $B\cap\{\psi\ge\tau\}$ ($\psi$ increases as $r$
+decreases), so by uniqueness it is $\pi\Gamma(\cdot,y)$, and $x=c(r(y))$. As $d\varphi^\natural(\grad_g\varphi^\natural)
+=g(d\varphi^\natural,d\varphi^\natural)=0$ there, $\varphi^\natural$ is constant along $c$, and
+$\varphi(x)=\varphi^\natural(\bar x(y))=\varphi^\natural(x)$. Take for $U$ a small neighbourhood of $q_0$ in $U_1$ on which
+these arguments apply.
+\end{proof}
+
+\begin{lemma}[Small lenses]\label{lem_ind_small_lens}
+\lean{LorentzianCalderon.IsCauchyTemporal.exists_causalFutureSet_inter_le_subset}
+For every $q_0$ and every neighbourhood $N$ of $q_0$ there are $r_0>0$ and $c>\psi(q_0)$ such that
+$J^+_g(\overline{B(q_0,r_0)})\cap\{\psi\le c\}$ is a compact subset of $N$.
+\end{lemma}
+\begin{proof}
+Choose $\rho>0$ with $\overline{B(q_0,\rho)}\subset N$. For $r>0$ and $c\in\R$ the set
+$L(r,c)=J^+_g(\overline{B(q_0,r)})\cap\{\psi\le c\}$ is closed (Lemma~\ref{lem_green_closed}), so it suffices to find
+$r\in(0,\rho)$ and $c>\psi(q_0)$ with $L(r,c)\subset B(q_0,\rho)$. Suppose there are none, and let $r_m\downarrow0$, $r_m<\rho$.
+Then the compact sets $S_m=L(r_m,\psi(q_0)+r_m)\cap\partial B(q_0,\rho)$ are nonempty: if $x\in L(r_m,\psi(q_0)+r_m)$,
+$|x-q_0|\ge\rho$, lies on a causal curve from a point $b$ with $|b-q_0|\le r_m$, then the curve meets $\partial B(q_0,\rho)$
+at some $y$ with $b\le_gy\le_gx$, and $\psi(y)\le\psi(x)$ since $\psi$ increases along causal curves
+(Definition~\ref{def_temporal}). The sets $S_m$ decrease, so they have a common point $x$. Then $\psi(x)\le\psi(q_0)$, and
+$q_0\le_gx$, since $J^-_g(x)$ is closed (Fact~\ref{fact_causal_topology}) and contains points within $r_m$ of $q_0$ for every
+$m$. As $|x-q_0|=\rho$, $x\ne q_0$, and $\psi(q_0)<\psi(x)$, a contradiction.
+\end{proof}
+
+In the next two lemmas $q_0\in\Sigma_\tau$, $U$ is an open neighbourhood of $q_0$, $\varphi$ is eikonal of future type for
+$g$ on $U$, $Z=Z_{g,\varphi}$, $\eta>0$, and $u\in C^\infty((-\eta,\eta)\times U)$ and functions $a,b$ on
+$(-\eta,\eta)\times U$ satisfy, for $|s|<\eta$, on $U\cap A_\tau$,
+\begin{equation}\label{eq_ind_above}
+\Box_gu_s=(\varphi-s)\,a_s,\quad a_s=0\text{ on }\{\varphi>s\},\quad 2Zu_s+(\Box_g\varphi)u_s=(\varphi-s)\,b_s,\quad
+u_s>0\text{ on }\{\varphi=s\}.
+\end{equation}
+For $B\in C^\infty(U_1\times\R)$, $U_1\subset U$, let
+$R(x,r)=\Box_{g,x}B(x,r)+2Z_x\partial_rB(x,r)+(\Box_g\varphi)(x)\,\partial_rB(x,r)$; then
+$\Box_g(B(\cdot,\varphi-s))=R(\cdot,\varphi-s)$ by the chain rule and $g(d\varphi,d\varphi)=0$ (Lemma~\ref{lem_calculus}), and with $b_k=\partial_r^kB(\cdot,0)$,
+\begin{equation}\label{eq_ind_hierarchy}
+\partial_r^kR(\cdot,0)=\Box_gb_k+2Zb_{k+1}+(\Box_g\varphi)\,b_{k+1}.
+\end{equation}
+
+\begin{lemma}[The amplitude across the frontier]\label{lem_ind_amplitude}
+\lean{LorentzianCalderon.exists_isFrontierAmplitude, LorentzianCalderon.IsFrontierAmplitude, LorentzianCalderon.exists_hierarchy, LorentzianCalderon.exists_isFrontierAmplitude_of_jets}
+In this situation there are an open neighbourhood $U_1\subset U$ of $q_0$ and $\eta_2\in(0,\eta]$ such that for every
+$\ell>\tau$ there is $B\in C^\infty(U_1\times\R)$ with:
+\begin{itemize}
+\item[\textup{(i)}] $R(x,\cdot)$ vanishes to infinite order at $r=0$, for $x\in U_1$;
+\item[\textup{(ii)}] $2ZB(\cdot,0)+(\Box_g\varphi)B(\cdot,0)=0$ on $U_1$;
+\item[\textup{(iii)}] for $|s|<\eta_2$, $B(\cdot,\varphi-s)=u_s$ near each point of $U_1\cap\{\psi>\ell\}$;
+\item[\textup{(iv)}] $B(\cdot,0)>0$ on $U_1\cap\{|\varphi|<\eta_2\}$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+If $|\varphi(q_0)|\ge\eta/4$, take $U_1=U\cap\{|\varphi-\varphi(q_0)|<\eta/16\}$, $\eta_2=\eta/16$ and
+$B(x,r)=c(r)u(\varphi(x)-r,x)$ for a cut-off $c$ equal to $1$ near $[\varphi(q_0)-\eta/8,\varphi(q_0)+\eta/8]$ and vanishing
+near $r=0$, smoothly glued to $0$ below $\ell$ as in the last step below; (iv) is void, and the jets at $r=0$ vanish. Assume
+now $|\varphi(q_0)|<\eta/4$ and replace $U$ by $U\cap\{|\varphi|<\eta/4\}$.
+
+\emph{The family above the frontier.} Let $c\in C_c^\infty(\R)$ with $c=1$ on $[-\eta/2,\eta/2]$ and
+$\supp c\subset[-5\eta/8,5\eta/8]$, and $B^\natural(x,r)=c(r)\,u(\varphi(x)-r,x)$, smooth on $U\times\R$. Let
+$b^\natural_k=\partial_r^kB^\natural(\cdot,0)$. For $x\in U\cap A_\tau$ and $r$ near $0$,
+$B^\natural(\cdot,\varphi-s)=u_s$ near $x$ with $s=\varphi(x)-r$, so $R^\natural(x,r)=(\Box_gu_s)(x)=r\,a_s(x)$, which
+vanishes for $r>0$ by \eqref{eq_ind_above}. Hence $R^\natural(x,\cdot)$ vanishes to infinite order at $0$, and by
+\eqref{eq_ind_hierarchy} and \eqref{eq_ind_above} (with $s=\varphi(x)$) the $b^\natural_k$ solve on $U\cap A_\tau$
+\begin{equation}\label{eq_ind_tri}
+2Zb_0+(\Box_g\varphi)b_0=0,\qquad 2Zb_{k+1}+(\Box_g\varphi)b_{k+1}=-\Box_gb_k\quad(k\ge0),
+\end{equation}
+with $b^\natural_0=u_{\varphi}(\cdot)>0$.
+
+\emph{Transport across the frontier.} $Z\psi>0$, as $Z$ is future-directed causal; let $\hat Z=Z/(Z\psi)$, so that
+$\hat Z\psi=1$, and $2Zb+(\Box_g\varphi)b=2(Z\psi)(\hat Zb+\alpha b)$ with $\alpha=\Box_g\varphi/(2Z\psi)$. Choose
+$\tau_0>\tau$ such that the integral curve of $\hat Z$ through $q_0$ reaches $\Sigma_{\tau_0}$ within $U$, and let $U_1$ be
+the set of points of $U$ whose integral curve of $\hat Z$ in $U$ reaches $\Sigma_{\tau_0}$; it is an open neighbourhood of
+$q_0$ (Fact~\ref{fact_ode}). On $U_1$, the equation $\hat Zb+\alpha b=f$ has a solution for any smooth $f$, smooth on $U_1$,
+with prescribed values on $\Sigma_{\tau_0}$ (Fact~\ref{fact_ode}). If $\beta$ solves it on $U_1\cap A_\tau$, then
+$b=\beta+c_1$, where $c_1$ solves $\hat Zc_1+\alpha c_1=f-\hat Z\beta-\alpha\beta$ with $c_1=0$ on $\Sigma_{\tau_0}$, solves
+it on $U_1$ and equals $\beta$ on $U_1\cap A_\tau$: the right-hand side vanishes on $A_\tau$, and the segment of the flow
+line between a point of $U_1\cap A_\tau$ and $\Sigma_{\tau_0}$ lies in $A_\tau$, since $\psi$ is monotone along it.
+Inductively we obtain $b_k\in C^\infty(U_1)$ solving \eqref{eq_ind_tri} on $U_1$ with $b_k=b^\natural_k$ on
+$U_1\cap A_\tau$. Moreover $b_0>0$ on $U_1$: with $\hat ZL=\alpha$, the function $b_0e^L$ is constant along the flow lines,
+and $b_0=b^\natural_0>0$ on $\Sigma_{\tau_0}$.
+
+\emph{Borel's lemma and gluing.} By Borel's lemma with parameters (Fact~\ref{fact_borel}) there is $B_2\in C^\infty(U_1\times\R)$ with $\partial_r^kB_2(\cdot,0)=b_k$ for all $k$. Let
+$\ell>\tau$ and $\kappa\in C^\infty(\R)$ with $\kappa=0$ on $(-\infty,\tau]$ and $\kappa=1$ on $[\ell,\infty)$, and put
+$B=\kappa(\psi)B^\natural+(1-\kappa(\psi))B_2$. Its jets at $r=0$ are the $b_k$ on all of $U_1$ (where $\kappa(\psi)\ne0$,
+$b^\natural_k=b_k$). By \eqref{eq_ind_hierarchy} and \eqref{eq_ind_tri}, (i) and (ii) hold, and (iv) holds with
+$\eta_2=\eta/4$. On $\{\psi>\ell\}$, $B=B^\natural$, and for $|s|<\eta/4$ and $x\in U_1$, $c=1$ near $\varphi(x)-s$; this
+gives (iii).
+\end{proof}
+
+\begin{lemma}[The wave across the frontier]\label{lem_ind_frontier_wave}
+\lean{LorentzianCalderon.exists_wave_of_frontier, LorentzianCalderon.exists_wave_of_isFrontierAmplitude}
+In the situation of \eqref{eq_ind_above}, let $F_s$, $|s|<\eta$, be sources supported in compact sets $K_s$ disjoint from
+$U$, such that $G^\ret_gF_s$ agrees with $u_sH(\varphi-s)$ on $U\cap A_\tau$ and vanishes on $U\cap\{\varphi<s\}$. Then
+there are an open neighbourhood $V\subset U$ of $q_0$, $\eta_2\in(0,\eta]$ and $w\in C^\infty((-\eta_2,\eta_2)\times V)$,
+$a_2,b_2\in C^\infty((-\eta_2,\eta_2)\times V)$ such that for $|s|<\eta_2$: $G^\ret_gF_s$ agrees with $w_sH(\varphi-s)$ on
+$V$; $w_s=u_s$ on $V\cap A_\tau\cap\{\varphi\ge s\}$; $w_s>0$ on $V\cap\{\varphi=s\}$; and
+$\Box_gw_s=(\varphi-s)a_{2,s}$ with $a_{2,s}=0$ on $\{\varphi>s\}$, $2Zw_s+(\Box_g\varphi)w_s=(\varphi-s)b_{2,s}$ on $V$.
+\end{lemma}
+\begin{proof}
+Let $U_1$, $\eta_2$ be given by Lemma~\ref{lem_ind_amplitude}, and $r_0>0$, $c>\tau$ by Lemma~\ref{lem_ind_small_lens}
+with $J^+_g(\overline{B(q_0,r_0)})\cap\{\psi\le c\}\subset U_1$. Put $\ell=\tau+(c-\tau)/4$, $c_1=\tau+(c-\tau)/2$,
+$c_2=c$, let $B$ be given by Lemma~\ref{lem_ind_amplitude} for $\ell$, $K_c=J^+_g(\overline{B(q_0,r_0)})\cap\{\psi\le c_2\}$,
+a compact subset of $U_1$, and $V=B(q_0,r_0)\cap\{\psi<c_1\}$. Let $|s|<\eta_2$.
+
+\emph{The correction.} By Lemma~\ref{lem_ind_amplitude}(i), $R_+(x,r)=R(x,r)H(r)$ is smooth on $U_1\times\R$. Choose
+$\zeta\in C_c^\infty(U_1)$ with $\zeta=1$ near $K_c$, let $f_s=\zeta R_+(\cdot,\varphi-s)$, extended by zero, which is
+smooth in $(s,x)$ with compact support, and $v_s=G^\adv_gf_s$ (Lemma~\ref{lem_green_operators}); let
+$\tilde u_s=B(\cdot,\varphi-s)$, so that $\Box_g\tilde u_s=R(\cdot,\varphi-s)$ on $U_1$ and, by
+Lemma~\ref{lem_ind_amplitude}(ii), $2Z\tilde u_s+(\Box_g\varphi)\tilde u_s=0$ on $\{\varphi=s\}$. On
+$U_1\cap\{\psi>\ell\}$, $R(\cdot,\varphi-s)=\Box_gu_s=(\varphi-s)a_s$ by (iii) and \eqref{eq_ind_above}, which vanishes
+where $\varphi>s$; so $f_s=0$ on $\{\psi>\ell\}$, and $v_s=0$ on $\{\psi>\ell\}$, since
+$\supp v_s\subset J^-_g(\supp f_s)\subset\{\psi\le\ell\}$.
+
+\emph{Duality.} We claim that $G^\ret_gF_s$ agrees with $H(\varphi-s)\tilde u_s-v_s$ on $V$. Let $h\in C_c^\infty(V)$,
+$\chi=G^\ret_gh$, $\kappa\in C^\infty(\R)$ with $\kappa=1$ on $(-\infty,c_1]$ and $\kappa=0$ on $[c_2,\infty)$, and
+$P=\kappa(\psi)\chi$. Then $\supp P\subset J^+_g(\supp h)\cap\{\psi\le c_2\}\subset K_c$, so $P$ has compact support in
+$U_1\subset U$, which is disjoint from $K_s$, and $G^\ret_gF_s(\Box_gP)=F_s(P)=0$. The function $E=\Box_gP-h$ is supported
+in $J^+_g(\supp h)\cap\{c_1\le\psi\le c_2\}\subset U_1\cap\{\psi>\ell\}$, where $G^\ret_gF_s$ agrees with
+$u_sH(\varphi-s)=\tilde u_sH(\varphi-s)$ (by (iii); $\{\varphi=s\}$ is a null set) and $v_s=0$. Hence, writing
+$\Theta_s=H(\varphi-s)\tilde u_s-v_s$ on $U_1$,
+\[
+G^\ret_gF_s(h)=-G^\ret_gF_s(E)=-\int\Theta_s\,E\,dV_g=\int\Theta_s\,h\,dV_g-\int\Theta_s\,\Box_gP\,dV_g .
+\]
+By the weak jump identity (Lemma~\ref{wav_jump}; the term on $\{\varphi=s\}$ vanishes by the transport equation of
+$\tilde u_s$) and Green's identity (Lemma~\ref{lem_green_identity}),
+$\int\Theta_s\Box_gP\,dV_g=\int H(\varphi-s)R(\cdot,\varphi-s)P\,dV_g-\int f_sP\,dV_g=0$, because $\zeta=1$ on $\supp P$.
+This proves the claim.
+
+\emph{The amplitude.} On $V\cap\{\varphi<s\}$, $G^\ret_gF_s$ vanishes and agrees with $-v_s$, so the continuous function
+$v_s$ vanishes there. Since $d\varphi\ne0$, every point of $V\cap\{\varphi=s\}$ is a limit of such points; hence $v_s=0$
+and $dv_s=0$ on $V\cap\{\varphi=s\}$. Put $w_s=\zeta\tilde u_s-v_s$, which equals $\tilde u_s-v_s$ on $V$. Then
+$G^\ret_gF_s$ agrees with $w_sH(\varphi-s)$ on $V$. Next, $\Box_gw_s=R(\cdot,\varphi-s)(1-H(\varphi-s))$ on $V$; this
+smooth function of $(s,x)$ vanishes on $\{\varphi\ge s\}$ (at $\varphi=s$ by Lemma~\ref{lem_ind_amplitude}(i)), so it is
+$(\varphi-s)a_{2,s}$ with $a_{2,s}$ smooth and $a_{2,s}=0$ on $\{\varphi>s\}$ (as in Lemma~\ref{lem_conormal}(b)). The
+function $2Zw_s+(\Box_g\varphi)w_s$ vanishes on $\{\varphi=s\}$, by the transport equation of $\tilde u_s$ and $v_s=dv_s=0$
+there; after multiplying it by a cut-off in $s$ equal to $1$ for $|s|<\eta_2/2$ and vanishing for $|s|\ge\eta_2$, it is
+$(\varphi-s)b_{2,s}$ in the same way, for $|s|<\eta_2/2$; we replace $\eta_2$ by $\eta_2/2$. On $V\cap\{\varphi=s\}$,
+$w_s=B(\cdot,0)>0$ by Lemma~\ref{lem_ind_amplitude}(iv). Finally, on the open set $V\cap A_\tau\cap\{\varphi>s\}$,
+$G^\ret_gF_s$ agrees with the continuous functions $w_s$ and $u_s$, so they are equal there, and by continuity on
+$V\cap A_\tau\cap\{\varphi\ge s\}$, every point of which is a limit of points of that set.
+\end{proof}
+
+\begin{lemma}[Structure of the $g$-waves near a frontier point]\label{lem_g_waves}
+\lean{LorentzianCalderon.ExtensionProperty.g_waves, LorentzianCalderon.IsFrontierWave}
+Assume $\sP(\tau)$ (Definition~\ref{def_extension}), let $q_0\in\Sigma_\tau\cap W$ and let $p_0$ be as in
+Lemma~\ref{lem_frontier}. Let $\sigma\colon[0,b]\to \R^{1+n}$ be a future-directed $g'$-null geodesic with $\sigma(1)=p_0$
+and $\sigma(b)\notin I^+_{g'}(\sigma(0))$, let $0<t_1<1<t_2<b$, $\mu$, $\eta$, $\cT$, $\varphi'$ be as in
+Lemma~\ref{lem_emission} for $\sg=g'$, and let $\theta$, $V'$, $u'$, $a'$, $b'$ and the sources $F_s$, $|s|<\eta$, be as
+in Lemma~\ref{lem_onesided} for $\sg=g'$ and $\cN_*=O$. Thus $\supp\theta\subset O\cap\cT$; $F_s$ is supported in
+$K_s=\supp\theta\cap\{\varphi'=s\}\subset J^+_{g'}(\mu(s))$; $V'\subset\cT$ is an open neighbourhood of $p_0$ disjoint
+from $\supp\theta$; $G^\ret_{g'}F_s$ agrees with $u'_sH(\varphi'-s)$ on $V'$; and on $V'$, with $Z'=Z_{g',\varphi'}$,
+$u'_s>0$ on $\{\varphi'=s\}$, $\Box_{g'}u'_s=(\varphi'-s)a'_s$ with $a'_s=0$ on $\{\varphi'>s\}$, and
+$2Z'u'_s+(\Box_{g'}\varphi')u'_s=(\varphi'-s)b'_s$. Then there are an open neighbourhood $V$ of $q_0$,
+$\eta_2\in(0,\eta]$, $\varphi\in C^\infty(V)$ and $u,a,b\in C^\infty((-\eta_2,\eta_2)\times V)$ such that, with
+$Z=Z_{g,\varphi}$ and $|s|<\eta_2$:
+\begin{itemize}
+\item[\textup{(i)}] $\varphi$ is eikonal of future type for $g$ on $V$; $\Psi_\tau(V\cap A_\tau)\subset V'$;
+$\varphi=\varphi'\circ\Psi_\tau$ on $V\cap A_\tau$; and $\varphi(q_0)=\varphi'(p_0)=0$;
+\item[\textup{(ii)}] $G^\ret_gF_s$ agrees with $u_s\,H(\varphi-s)$ on $V$, and $V\cap\supp\theta=\emptyset$;
+\item[\textup{(iii)}] $u_s=u'_s\circ\Psi_\tau$ on $V\cap A_\tau\cap\{\varphi\ge s\}$, and $u_s>0$ on $\{\varphi=s\}\cap V$;
+\item[\textup{(iv)}] $\Box_gu_s=(\varphi-s)a_s$ with $a_s=0$ on $\{\varphi>s\}$, and
+$2Zu_s+(\Box_g\varphi)u_s=(\varphi-s)b_s$, on $V$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+Write $\Psi=\Psi_\tau$.
+
+\emph{Step 1 (the phase).} Let $B$, $\hat\Psi$ be as in Lemma~\ref{lem_frontier}(c) and
+$B_1=(B\cap\hat\Psi^{-1}(V'))\setminus\supp\theta$, an open neighbourhood of $q_0$ (as $\hat\Psi(q_0)=p_0\in V'$ and
+$q_0\in W$, $\supp\theta\subset O$). Put $\varphi^\natural=\varphi'\circ\hat\Psi\in C^\infty(B_1)$. On
+$B_1\cap\{\psi\ge\tau\}$, where $\hat\Psi$ pulls $g'$ back to $g$, $g(d\varphi^\natural,d\varphi^\natural)
+=g'(d\varphi',d\varphi')\circ\hat\Psi=0$. The vector $w=d\hat\Psi(q_0)Y(q_0)$ is $g'$-timelike, and
+$g'(d\hat\Psi(Y),Y'\circ\hat\Psi)<0$ on $B\cap A_\tau$ by Lemma~\ref{lem_no_escape}, hence $\le0$ at $q_0\in\overline{A_\tau}$;
+so $w$ is future-directed. Therefore $g(-\grad_g\varphi^\natural,Y)(q_0)=-d\varphi'(w)=g'(Z',w)(p_0)<0$, and
+$-\grad_g\varphi^\natural(q_0)$, a null vector, is future-directed. Lemma~\ref{lem_ind_phase} gives an open
+$U\subset B_1$ containing $q_0$ and $\varphi$ eikonal of future type on $U$ with $\varphi=\varphi^\natural$ on
+$U\cap\{\psi\ge\tau\}$.
+
+\emph{Step 2 (one-sidedness).} The integral curves of $Z$ are future-directed causal, $\varphi$ is constant along them,
+and $\psi$ increases along them. By Fact~\ref{fact_ode} there are $t_1>0$ and an open neighbourhood $U_0$ of $q_0$ such
+that for $x\in U_0$ the integral curve of $Z$ from $x$ stays in $U$ on $[0,t_1]$ and ends at a point $x'$ with
+$\psi(x')>\tau$; thus $x\le_gx'$, $x'\in U\cap A_\tau$ and $\varphi(x')=\varphi(x)$. Let $U_2=U\cap U_0$. We claim that
+$G^\ret_gF_s$ vanishes on $U_2\cap\{\varphi<s\}$; by Lemma~\ref{lem_green_distributions} it suffices that this set does not
+meet $J^+_g(K_s)$. Let $x\in U_2$, $y\in K_s$ with $y\le_gx$. Then $y\le_gx'$ with $y\in O$, so $y\le_{g'}\Psi(x')$ by
+Lemma~\ref{lem_causal_transfer}. As $y\in J^+_{g'}(\mu(s))$ and $\Psi(x')=\hat\Psi(x')\in V'\subset\cT$, Lemma~\ref{lem_emission}(ii)
+gives $\varphi'(\Psi(x'))\ge s$, and $\varphi(x)=\varphi(x')=\varphi'(\hat\Psi(x'))\ge s$.
+
+\emph{Step 3 (above the frontier).} Let $u^\natural_s=u'_s\circ\hat\Psi$, $a^\natural_s=a'_s\circ\hat\Psi$,
+$b^\natural_s=b'_s\circ\hat\Psi$. Lemma~\ref{lem_propagation}(a), with $N=V'$ and the locally integrable function
+$u'_sH(\varphi'-s)$, shows that $G^\ret_gF_s$ agrees with $u^\natural_sH(\varphi-s)$ on $U_2\cap A_\tau$, since there
+$\Psi=\hat\Psi$ maps into $V'$ and $\varphi=\varphi'\circ\hat\Psi$. On $U_2\cap A_\tau$, $\hat\Psi$ is a local isometry, so
+$\Box_g(w\circ\hat\Psi)=(\Box_{g'}w)\circ\hat\Psi$ and $g(d(w_1\circ\hat\Psi),d(w_2\circ\hat\Psi))
+=g'(dw_1,dw_2)\circ\hat\Psi$; hence $u^\natural$, $a^\natural$, $b^\natural$ satisfy \eqref{eq_ind_above} on
+$U_2\cap A_\tau$.
+
+\emph{Step 4 (the amplitude).} The sets $K_s$ are disjoint from $U_2\subset B_1$. Lemma~\ref{lem_ind_frontier_wave}, applied
+on $U_2$ with $u^\natural$, Step 3 and Step 2, gives $V$, $\eta_2$ and $u=w$, $a=a_2$, $b=b_2$ with (ii) and (iv), and
+$u_s=u^\natural_s=u'_s\circ\Psi$ on $V\cap A_\tau\cap\{\varphi\ge s\}$, $u_s>0$ on $\{\varphi=s\}\cap V$: this is (iii).
+For (i): $\varphi$ is eikonal of future type on $V\subset U$; on $V\cap A_\tau$, $\Psi=\hat\Psi$ maps into $V'$ and
+$\varphi=\varphi'\circ\Psi$; and $\varphi(q_0)=\varphi'(\hat\Psi(q_0))=\varphi'(\sigma(1))=0$ by
+Lemma~\ref{lem_emission}(i).
+\end{proof}
+
+\begin{lemma}[Local extension at a frontier point]\label{lem_ind_local_extension}
+\lean{LorentzianCalderon.ExtensionProperty.exists_local_extension, LorentzianCalderon.ExtensionProperty.exists_waves}
+Assume $\sP(\tau)$ (Definition~\ref{def_extension}) and let $q_0\in\Sigma_\tau\cap W$. There are an open neighbourhood
+$U$ of $q_0$ and a smooth map $\Psi_{q_0}\colon U\to\R^{1+n}$ with $\Psi_{q_0}^*g'=g$ on $U$, $\Psi_{q_0}=\Psi_\tau$ on
+$U\cap A_\tau$, and $\Psi_{q_0}=\id$ on $U\setminus W$.
+\end{lemma}
+\begin{proof}
+Write $\Psi=\Psi_\tau$ and let $p_0$ be as in Lemma~\ref{lem_frontier}.
+
+\emph{C1 (directions and waves).} By Lemma~\ref{lem_escape} and Lemma~\ref{lem_reach} for $\sg=g'$ there is $y\in O$ with
+$y\le_{g'}p_0$ and $y\notin I^-_{g'}(p_0)$, so by Lemmas~\ref{lem_first_arrival} and \ref{lem_open_directions} (for the
+open set $O$) the set $\cV(p_0)$ is a nonempty open subset of the future null cone at $p_0$; its image under
+$\zeta\mapsto g'(\zeta,\cdot)$ is a nonempty open subset of the null cone of covectors at $p_0$. By Lemma~\ref{lem_span}
+there is a finite set $\cA\subset\cV(p_0)$ and $I\subset\cA$ with $n+1$ elements such that
+$\{g'(p_0)\}\cup\{g'(\zeta,\cdot)\otimes g'(\zeta,\cdot)\}_{\zeta\in\cA}$ spans $\Sym$ and
+$(g'(\zeta,\cdot))_{\zeta\in I}$ is a basis of the covectors. For $a=\zeta\in\cA$ let $\sigma_a(t)=\exp_{p_0}((t-1)\zeta)$
+on $[0,b_a]$ and $t_{1,a}\in(0,1)$ be as in the definition of $\cV(p_0)$, so that $\sigma_a([0,t_{1,a}])\subset O$. Let
+$\mu_a(s)=\sigma_a(0)+s\,\partial_t$ for small $|s|$, a future-directed $g'$-timelike curve in $O$. Let $\varphi'_a$,
+$\cT_a$, $\eta_a$ be given by Lemma~\ref{lem_emission} for $\sg=g'$, $\sigma_a$, $\mu_a$ and the interval
+$[t_{1,a}/2,(1+b_a)/2]$, and $\theta_a$, $V'_a$, $u'_a$, $a'_a$, $b'_a$, $F_{a,s}$ by Lemma~\ref{lem_onesided} with
+$t_*=t_{1,a}$ and $\cN_*=O$. By Lemma~\ref{lem_emission}(i), $\varphi'_a(p_0)=0$ and
+$d\varphi'_a(p_0)=-\lambda_a\,g'(\zeta,\cdot)$ with $\lambda_a>0$. Let $V_a$, $\varphi_a$, $u_a$, $\eta_{2,a}$ (and the
+conormal coefficients) be given by Lemma~\ref{lem_g_waves}.
+
+\emph{C2 (local gauge).} Let $V'_{\mathrm{inj}}\ni p_0$ be an open set on which $\mathbf v'$ is injective (see the proof of
+Lemma~\ref{lem_frontier}(c)). Choose $0<\eta_3\le\min_a\eta_{2,a}$, $\cJ=(-\eta_3,\eta_3)$, and an open neighbourhood
+$V'\subset V'_{\mathrm{inj}}\cap\bigcap_aV'_a$ of $p_0$ such that $\varphi'_a(V')\subset\cJ$, the spanning and basis
+properties of C1 hold with $d\varphi'_a(p)$ at every $p\in V'$ (they are open conditions), and $\Phi'_I=(\varphi'_a)_{a\in I}$
+is a diffeomorphism from $V'$ onto an open subset of $\R^{1+n}$. Choose an open neighbourhood $V\subset\bigcap_aV_a$ of
+$q_0$ with $\varphi_a(V)\subset\cJ$, $\Phi_I(V)\subset\Phi'_I(V')$ where $\Phi_I=(\varphi_a)_{a\in I}$, and
+$\Psi(V\cap A_\tau)\subset V'$ (possible since $\Phi_I(q_0)=0=\Phi'_I(p_0)$ and by Lemma~\ref{lem_frontier}(a)); in
+addition $V\setminus W\subset V'$: if $q_0\in\inte W$ take $V\subset\inte W$, and if $q_0\in\partial W$ take
+$V\subset V'$, which is a neighbourhood of $q_0$ since $p_0=q_0$ by Lemma~\ref{lem_frontier}(b). Define
+\[
+\Psi_{q_0}=(\Phi'_I|_{V'})^{-1}\circ\Phi_I\colon V\to V'.
+\]
+For $q\in V\cap A_\tau$ we have $\Phi'_I(\Psi(q))=\Phi_I(q)$ (Lemma~\ref{lem_g_waves}(i)) and $\Psi(q)\in V'$, hence
+$\Psi_{q_0}=\Psi$ on $V_+=V\cap A_\tau$.
+
+\emph{C3 (application of the local step).} The hypotheses of Proposition~\ref{prop_local_step} hold for $\Psi_{q_0}$ on $V$,
+with $\psi$, $\cJ$ and the waves of C1: the eikonal and conormal conditions \textup{(L1)} on $V$ by
+Lemma~\ref{lem_g_waves}(i)--(iv), and on $V'$ by the properties of the $g'$-waves (Lemma~\ref{lem_onesided}); the
+conditions \textup{(L2)} on $V_+$ by $\Psi_{q_0}=\Psi$ there, $\sP(\tau)$ and Lemma~\ref{lem_g_waves}(i),(iii); the gauge
+condition \textup{(L3)} for $a\in I$ by construction; the basis and spanning conditions \textup{(L3)}, \textup{(L4)} by C2. Hence there is an open neighbourhood $V^\circ\subset V$ of $q_0$ on which $\Psi_{q_0}^*g'=g$, and every
+$w\in C^\infty(V^\circ)$ with $\Box_gw=0$ on $V^\circ$ and $w=0$ on $V^\circ\cap A_\tau$ vanishes. Put $U=V^\circ$.
+
+\emph{C4 (identity outside $W$).} For each $i$ the function $w=\sT v'_i-v'_i\circ\Psi_{q_0}$ is smooth on $V^\circ$,
+$\Box_gw=0$ there (as $\Psi_{q_0}$ is a local isometry on $V^\circ$), and $w=0$ on $V^\circ\cap A_\tau$ by
+Lemma~\ref{lem_propagation}(b). Hence $w=0$, i.e.\ $\mathbf v=\mathbf v'\circ\Psi_{q_0}$ on $V^\circ$. For
+$x\in V^\circ\setminus W$ we also have $\mathbf v(x)=\mathbf v'(x)$, so $\mathbf v'(x)=\mathbf v'(\Psi_{q_0}(x))$ with
+$x\in V\setminus W\subset V'\subset V'_{\mathrm{inj}}$ and $\Psi_{q_0}(x)\in V'$; by injectivity $\Psi_{q_0}(x)=x$.
+\end{proof}
+
+\begin{lemma}[Patching]\label{lem_ind_patching}
+\lean{LorentzianCalderon.ExtensionProperty.exists_extend_below_of_local}
+Assume $\sP(\tau)$ (Definition~\ref{def_extension}) and that every $q_0\in\Sigma_\tau\cap W$ has an open neighbourhood
+$U(q_0)$ with a map $\Psi_{q_0}$ as in Lemma~\ref{lem_ind_local_extension}. Then $\sP(\tau-\delta)$ holds for some
+$\delta>0$.
+\end{lemma}
+\begin{proof}
+Write $\Psi=\Psi_\tau$ and $K=\Sigma_\tau\cap W$, a compact set. For $q\in K$ choose $r_q>0$ with $\Phi_t(q)\in U(q)$ for
+$t\in[0,2r_q]$, and let $B(q)=\{x:\Phi_t(x)\in U(q)\text{ for }t\in[0,2r_q]\}$; it is open (by compactness of
+$[0,2r_q]$), contains $q$, and $B(q)\subset U(q)$. Finitely many $B(q_i)$, $i=1,\dots,N$, cover $K$. Choose $\delta>0$
+with $\delta\le r_{q_i}$ for all $i$ and $W\cap\{\tau-\delta<\psi\le\tau\}\subset\bigcup_iB(q_i)$; this is possible since
+$\psi$ attains on the compact set $(W\cap\{\psi\le\tau\})\setminus\bigcup_iB(q_i)$ a maximum smaller than $\tau$ (if the set
+is nonempty).
+
+\emph{Overlaps.} Let $x\in B(q_i)\cap B(q_j)$ with $\psi(x)>\tau-\delta$. The flow line $\Phi_t(x)$, $t\in[0,2\delta]$, lies in
+$U(q_i)\cap U(q_j)$ and ends in $A_\tau$, as $\psi(\Phi_{2\delta}(x))=\psi(x)+2\delta>\tau$. So the connected component $C$
+of $x$ in $U(q_i)\cap U(q_j)$ meets $A_\tau$ in a nonempty open set, on which $\Psi_{q_i}=\Psi=\Psi_{q_j}$. By
+Lemma~\ref{lem_rigidity} on $C$, $\Psi_{q_i}(x)=\Psi_{q_j}(x)$.
+
+\emph{The map.} Define $\Psi^{\mathrm{new}}$ on $A_{\tau-\delta}$ by $\Psi^{\mathrm{new}}=\Psi$ on $A_\tau$,
+$\Psi^{\mathrm{new}}=\Psi_{q_i}$ on $B(q_i)\cap A_{\tau-\delta}\setminus A_\tau$, and $\Psi^{\mathrm{new}}=\id$ elsewhere;
+by the overlaps this is well defined, and $\Psi^{\mathrm{new}}=\Psi_{q_i}$ on all of $B(q_i)\cap A_{\tau-\delta}$, since
+$\Psi_{q_i}=\Psi$ on $U(q_i)\cap A_\tau$. Moreover $\Psi^{\mathrm{new}}(x)=x$ for $x\notin W$: by $\sP(\tau)$, by
+$\Psi_{q_i}=\id$ on $U(q_i)\setminus W$, or by definition. Near each point $x$ of $A_{\tau-\delta}$, $\Psi^{\mathrm{new}}$
+agrees with a smooth map pulling $g'$ back to $g$: with $\Psi$ near $x\in A_\tau$; with $\Psi_{q_i}$ near
+$x\in W\setminus A_\tau$, as then $x\in B(q_i)$ for some $i$; and with the identity on the open set
+$\R^{1+n}\setminus W$ near $x\notin W$, where $g=g'=\gM$. Hence $\sP(\tau-\delta)$ holds.
+\end{proof}
+
+\begin{lemma}[The induction]\label{lem_induction}
+\lean{LorentzianCalderon.exists_extensionProperty, LorentzianCalderon.extensionProperty_id, LorentzianCalderon.exists_extensionProperty_of_forall_gt, LorentzianCalderon.ExtensionProperty.exists_extend_below}
+$\sP(\tau)$ (Definition~\ref{def_extension}) holds for every $\tau\in\R$.
+\end{lemma}
+\begin{proof}
+\emph{Step A (start).} Let $\tau_{\max}=\max_W\psi$. For $\tau\ge\tau_{\max}$, $A_\tau\cap W=\emptyset$ and
+$\Psi_\tau=\id$ satisfies $\sP(\tau)$, since $g=g'=\gM$ on $O$.
+
+\emph{Step B (closedness).} If $\sP(\tau)$ holds for all $\tau>\tau_\bullet$, then $\sP(\tau_\bullet)$ holds: put
+$\Psi(x)=\Psi_{\sigma(x)}(x)$ with $\sigma(x)=(\tau_\bullet+\psi(x))/2$ for $x\in A_{\tau_\bullet}$. By
+Lemma~\ref{lem_extension_unique}, near each $x$ this map agrees with $\Psi_{\sigma(x)}$, which has the required properties
+on $A_{\sigma(x)}\ni x$.
+
+\emph{Step C (extension).} If $\sP(\tau)$ holds, then $\sP(\tau-\delta)$ holds for some $\delta>0$, by
+Lemmas~\ref{lem_ind_local_extension} and \ref{lem_ind_patching}.
+
+The set of $\tau$ with $\sP(\tau)$ is an up-set (Lemma~\ref{lem_extension_unique}) containing $[\tau_{\max},\infty)$. If
+it were not all of $\R$, its infimum $\tau_\bullet$ would be finite, $\sP(\tau_\bullet)$ would hold by Step B, and
+$\sP(\tau_\bullet-\delta)$ by Step C, a contradiction.
+\end{proof}
+\section{The main result}\label{main}
+
+\begin{lemma}[The exterior of the box]\label{main_exterior}
+\lean{LorentzianCalderon.isConnected_compl_M0, LorentzianCalderon.IsAdmissibleMetric.exists_future_dt}
+Let $n\ge1$, $T\ge0$, $M_0=[-T,T]\times[-1,1]^n$ and $O_0=\R^{1+n}\setminus M_0$.
+\begin{itemize}
+\item[\textup{(a)}] $O_0$ is connected.
+\item[\textup{(b)}] Let $\sg$ be a Lorentzian metric on $\R^{1+n}$, equal to $\gM$ on $O_0$, which is globally hyperbolic
+for some time orientation (Definition~\ref{def_global_hyperbolicity}). Then it is globally hyperbolic for a time
+orientation for which $\partial_t$ is future-directed on $O_0$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+(a) Let $R=T+n+1$; every point of $M_0$ has Euclidean norm $<R$, so the sphere $S_R=\{|y|=R\}$ lies in $O_0$, and it is
+connected since $1+n\ge2$. Let $y\in O_0$; then $y\ne0$. Since $cx\in M_0$ for $x\in M_0$ and $|c|\le1$, the segment
+$\{cy\}$ with $c$ between $1$ and $R/|y|$ lies in $O_0$: if $c\ge1$ and $cy\in M_0$, then $y\in M_0$; if $c<1$, then
+$c\ge R/|y|$ and $|cy|\ge R$. This segment joins $y$ to $S_R$, so $O_0$ is connected.
+
+(b) Let $Y$ be a time orientation for which $\sg$ is globally hyperbolic. On $O_0$, $Y$ is timelike for $\gM$, so its time
+component $Y^0$ does not vanish there; by continuity and (a) it has constant sign on $O_0$. If it is negative, replace $Y$ by
+$-Y$, which keeps global hyperbolicity (Definition~\ref{def_global_hyperbolicity}). Then $\gM(\partial_t,Y)=-Y^0<0$ on
+$O_0$, that is, $\partial_t$ is future-directed there.
+\end{proof}
+
+\begin{lemma}[Proper local diffeomorphisms]\label{main_proper}
+\lean{LorentzianCalderon.exists_equiv_of_isProperMap, LorentzianCalderon.bijective_of_isLocalHomeomorph_of_isProperMap}
+A smooth proper map $\Psi\colon\R^{1+n}\to\R^{1+n}$ whose differential is injective at every point is a diffeomorphism.
+\end{lemma}
+\begin{proof}
+By the inverse function theorem $\Psi$ is a local diffeomorphism, in particular a local homeomorphism. Being proper, it is a
+closed map, and its fibres are compact and discrete, hence finite. A closed local homeomorphism with finite fibres is a
+covering map. Since $\R^{1+n}$ is simply connected, the identity of $\R^{1+n}$ lifts through $\Psi$: there is a continuous
+$s$ with $\Psi\circ s=\id$ and $s(\Psi(0))=0$. Then $s\circ\Psi$ and $\id$ are both lifts of $\Psi$ through $\Psi$ taking
+the value $0$ at $0$; by uniqueness of lifts on the connected space $\R^{1+n}$, $s\circ\Psi=\id$. Hence $\Psi$ is bijective
+with inverse $s$, which is smooth by the inverse function theorem.
+\end{proof}
+
+\begin{theorem}[Uniqueness from Cauchy data sets]\label{thm_main}
+\lean{LorentzianCalderon.main}
+Let $n\ge2$, $T>0$, $Q_T=(-T,T)\times B$, where $B=(-1,1)^n$ is the open unit cube, and $M_0=\overline{Q_T}$. Let
+$g,g'$ be smooth Lorentzian metrics on $\R^{1+n}$ which are equal to $\gM$ outside $M_0$ and globally hyperbolic for some
+time orientation (Definition~\ref{def_global_hyperbolicity}). If $C^{\mathrm{Hyp}}_g=C^{\mathrm{Hyp}}_{g'}$
+(Definition~\ref{def_cauchy_data}), then $g=\Psi^*g'$ for a diffeomorphism $\Psi$ of $\R^{1+n}$ with $\Psi=\id$ outside
+$M_0$.
+\end{theorem}
+\begin{proof}
+\emph{Step 1 (time orientations).} By Lemma~\ref{main_exterior}(b) we may choose time orientations of $g$ and $g'$ for which
+both are globally hyperbolic and $\partial_t$ is future-directed on $O_0=\R^{1+n}\setminus M_0$; the Cauchy data sets do not
+depend on them. Then the standing assumptions \textup{(A1)}--\textup{(A3)} of Definition~\ref{def_setting} hold (of the
+hypothesis $C^{\mathrm{Hyp}}_g=C^{\mathrm{Hyp}}_{g'}$ only the inclusion $C^{\mathrm{Hyp}}_g\subset C^{\mathrm{Hyp}}_{g'}$
+is used), and we use the notation of that definition and of Section~\ref{induction}.
+
+\emph{Step 2 (the map).} By Lemma~\ref{lem_induction} there are maps $\Psi_\tau$ with the properties of $\sP(\tau)$ for
+every $\tau\in\R$. Put $\Psi(x)=\Psi_{\psi(x)-1}(x)$. For $x\in A_\tau$, the maps $\Psi_{\psi(x)-1}$ and $\Psi_\tau$ agree
+on $A_{\max(\tau,\psi(x)-1)}\ni x$ by Lemma~\ref{lem_extension_unique}; hence $\Psi=\Psi_\tau$ on $A_\tau$ for every $\tau$.
+So $\Psi\colon\R^{1+n}\to\R^{1+n}$ is smooth, $\Psi^*g'=g$, and $\Psi=\id$ on $O$.
+
+\emph{Step 3 ($\Psi$ is a diffeomorphism).} The differential of $\Psi$ is injective at every point $x$: if $d\Psi(x)v=0$, then
+$g_x(v,\cdot)=g'_{\Psi(x)}(d\Psi(x)v,d\Psi(x)\,\cdot)=0$, so $v=0$ since $g_x$ is nondegenerate. $\Psi$ is proper: for
+compact $K$ the closed set $\Psi^{-1}(K)$ is contained in the compact set $K\cup W$, since $\Psi(x)=x$ for $x\notin W$. By
+Lemma~\ref{main_proper}, $\Psi$ is a diffeomorphism.
+
+\emph{Step 4 ($\Psi=\id$ outside $M_0$).} Since $g=g'$ on $O_0$, both $\Psi|_{O_0}$ and the inclusion
+$O_0\to\R^{1+n}$ pull $g'$ back to $g|_{O_0}$. They agree on the nonempty open set $O\subset O_0$, and $O_0$ is connected
+(Lemma~\ref{main_exterior}(a)); by Lemma~\ref{lem_rigidity}, $\Psi=\id$ on $O_0$.
+\end{proof}
+\begin{thebibliography}{BGP07}
+\bibitem[BGP07]{BGP} C.~B\"ar, N.~Ginoux, F.~Pf\"affle, \emph{Wave equations on Lorentzian manifolds and quantization}, ESI
+Lectures in Mathematics and Physics, European Mathematical Society, Z\"urich, 2007.
+\bibitem[BS05]{BS05} A.~N.~Bernal, M.~S\'anchez, \emph{Smoothness of time functions and the metric splitting of globally
+hyperbolic spacetimes}, Comm.\ Math.\ Phys.\ 257 (2005), no.~1, 43--50.
+\bibitem[Har02]{Hartman} P.~Hartman, \emph{Ordinary differential equations}, 2nd ed., Classics in Applied Mathematics 38,
+SIAM, Philadelphia, PA, 2002.
+\bibitem[HM19]{HM19} A.~Hounnonkpe, E.~Minguzzi, \emph{Globally hyperbolic spacetimes can be defined without the
+`causal' condition}, Class.\ Quantum Grav.\ 36 (2019), no.~19, 197001.
+\bibitem[ONe83]{ONeill} B.~O'Neill, \emph{Semi-Riemannian geometry. With applications to relativity}, Pure and Applied
+Mathematics 103, Academic Press, New York, 1983.
+\bibitem[Rau12]{Rauch} J.~Rauch, \emph{Hyperbolic partial differential equations and geometric optics}, Graduate Studies in
+Mathematics 133, American Mathematical Society, Providence, RI, 2012.
+\end{thebibliography}
+
+\end{document}
